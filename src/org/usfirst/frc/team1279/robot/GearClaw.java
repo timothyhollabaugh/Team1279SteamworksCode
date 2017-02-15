@@ -10,18 +10,18 @@ public class GearClaw {
 
   // CHANGE ALL CONSTANTS TO SANE VALUES
 
-  public static final double CLOSE_VOLTAGE = 3;
-  public static final double OPEN_VOLTAGE = -3;
+  public static final double CLOSE_VOLTAGE = 2;
+  public static final double OPEN_VOLTAGE = -2;
 
   /**
    * The minimum position for grabbing a gear
    */
-  public static final double CLAW_GEAR_MIN_POS = -0.400;
+  public static final double CLAW_GEAR_MIN_POS = -0.600;
 
   /**
    * The maximum poition for grabbing a gear
    */
-  public static final double CLAW_GEAR_MAX_POS = -0.350;
+  public static final double CLAW_GEAR_MAX_POS = -0.550;
   
   /**
    * The minimum position for raising or lowering the claw 

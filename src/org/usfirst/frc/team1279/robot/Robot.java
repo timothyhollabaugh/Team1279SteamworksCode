@@ -204,10 +204,10 @@ public class Robot extends SampleRobot implements Constants
             climber.drive(.1);
          }
          
-         if (ctrlStick.getRawAxis(3) > 0.1) // right trigger
+         if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
          {
             System.out.println("CLIMB R TRIGGER");
-            climber.drive(-ctrlStick.getRawAxis(3));
+            climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
          }else{
         	 climber.drive(0);
          }

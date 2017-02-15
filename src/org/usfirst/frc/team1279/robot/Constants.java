@@ -25,6 +25,7 @@ public interface Constants
    public final int RUN_CLIMBER_BTN    = 5; // left button
    public final int KILL_CLIMBER_BTN   = 8; // start
    public final int MANUAL_OVERIDE_BTN = 7; // select (back is for nerds)
+   public final int RUN_CLIMBER_AXIS   = 3;           
 
    // breakout box buttons
    // public final int OPEN_CLAW_BTN = 3; // blue button
