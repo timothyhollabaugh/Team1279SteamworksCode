@@ -186,16 +186,23 @@ public class Robot extends SampleRobot implements Constants
             claw.closeClaw();
          }
          
-         if (ctrlStick.getRawButton(RAISE_CLAW_BTN))
-         {
-            System.out.println("RAISE GEAR BTN");
-            gearLift.raiseGear();
-         }
+         if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)){
+        	 if (ctrlStick.getRawButton(RAISE_CLAW_BTN))
+        	 {
+        		 System.out.println("RAISE GEAR BTN");
+        		 gearLift.raiseGear();
+        	 }
          
-         if (ctrlStick.getRawButton(LOWER_CLAW_BTN))
-         {
-            System.out.println("LOWER GEAR BTN");
-            gearLift.lowerGear();
+        	 if (ctrlStick.getRawButton(LOWER_CLAW_BTN))
+        	 {
+        		 System.out.println("LOWER GEAR BTN");
+        		 gearLift.lowerGear();
+        	 }
+         }else{
+        	 if(Math.abs(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS)) > 0.1){
+        		 System.out.println("Running gear lift");
+        		 gearLift.driveGear(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS));
+        	 }
          }
          
          if (ctrlStick.getRawButton(RUN_CLIMBER_BTN))

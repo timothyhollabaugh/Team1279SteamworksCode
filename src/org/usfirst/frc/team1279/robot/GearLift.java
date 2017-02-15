@@ -50,4 +50,17 @@ public class GearLift {
     }
     
   }
+  
+  public void stopGear(){
+	  masterTalon.set(0);
+  }
+  
+  public boolean driveGear(double amount){
+	  if(gearClaw.isClosedEnough()){
+	      masterTalon.set(amount);
+	      return true;
+	    }else{
+	      return false;
+	    }
+  }
 }
