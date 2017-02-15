@@ -250,6 +250,13 @@ public class Robot extends SampleRobot implements Constants
    @Override
    public void test()
    {
+	   myRobot.drive(0.5, 0);
+	   Timer.delay(0.5);
+	   myRobot.drive(-0.5, 0);
+	   Timer.delay(0.5);
+	   myRobot.drive(0, 0);
+	   
+	   /*
       TalonTest leftLift = new TalonTest(5);
       TalonTest rightLift = new TalonTest(6);
 
@@ -273,5 +280,6 @@ public class Robot extends SampleRobot implements Constants
 
          Timer.delay(0.020); // was 5 mSec
       }
+      */
    }
 }
