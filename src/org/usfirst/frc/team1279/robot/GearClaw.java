@@ -16,12 +16,12 @@ public class GearClaw {
   /**
    * The minimum position for grabbing a gear
    */
-  public static final double CLAW_GEAR_MIN_POS = -0.600;
+  public static final double CLAW_GEAR_MIN_POS = -0.440;
 
   /**
    * The maximum poition for grabbing a gear
    */
-  public static final double CLAW_GEAR_MAX_POS = -0.550;
+  public static final double CLAW_GEAR_MAX_POS = -0.390;
   
   /**
    * The minimum position for raising or lowering the claw 
@@ -36,7 +36,7 @@ public class GearClaw {
   /**
    * The current to target when grabbing a gear
    */
-  public static final double CLAW_GRAB_VOLTAGE = 1.6;
+  public static final double CLAW_GRAB_VOLTAGE = 1.8;
   
   /**
    * The current limit on the talon

@@ -6,8 +6,8 @@ import com.ctre.CANTalon.TalonControlMode;
 
 public class GearLift {
 
-  public static final double UP_VOLTAGE = 2;
-  public static final double DOWN_VOLTAGE = -2;
+  public static final double UP_VOLTAGE = 5;
+  public static final double DOWN_VOLTAGE = -5;
   
   public CANTalon masterTalon;
   public CANTalon slaveTalon;
