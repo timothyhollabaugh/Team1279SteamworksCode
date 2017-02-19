@@ -2,40 +2,41 @@ package org.usfirst.frc.team1279.robot;
 
 import com.ctre.CANTalon;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-
 public class Climber implements Constants
 {
-   public static final double kDefaultSensitivity = 0.5;
-   public static final double kDefaultMaxOutput   = 1.0;
-   private double             m_sensitivity;
-   private double             m_maxOutput;
-   private CANTalon           m_motor;
-   private DigitalInput       m_limitSwitch;
-   private boolean            m_isOverrideSet     = false;
-   private boolean            m_isShutDown        = false;
+   private CANTalon m_motor;
+   private boolean  m_isShutDown = false;
 
    public Climber(final int CanID)
    {
-      m_sensitivity = kDefaultSensitivity;
-      m_maxOutput = kDefaultMaxOutput;
       m_motor = new CANTalon(CanID);
-      m_limitSwitch = new DigitalInput(0);
       drive(0);
 
       // configure
-      m_motor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
+      //m_motor.setFeedbackDevice(CANTalon.FeedbackDevice.CtreMagEncoder_Relative);
       m_motor.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
-      m_motor.setCloseLoopRampRate(0.50);
+      m_motor.enableBrakeMode(true);
+      m_motor.configNominalOutputVoltage(+0.0f, -0.0f);
+
+      // TODO: use the forward softlimit or limit the drive voltage
+      // to disable forward direction?
+      m_motor.configPeakOutputVoltage(+0.0f, -12.0f);
+      // m_motor.setForwardSoftLimit(0);
+      // m_motor.enableForwardSoftLimit(true);
+
       m_motor.setVoltageRampRate(24.0);
-      m_motor.setEncPosition(0);
+
+      // initialize forward and reverse limit switches as normally open
+      m_motor.ConfigFwdLimitSwitchNormallyOpen(true);
+      m_motor.ConfigRevLimitSwitchNormallyOpen(true);
    }
 
    public void drive(double output)
    {
-      if (m_limitSwitch.get() && !m_isOverrideSet && !m_isShutDown)
+      if (!m_isShutDown)
       {
-         m_motor.set(limit(output) * m_maxOutput);
+         // motor climbs in reverse direction
+         m_motor.set(-Math.abs(output));
       } else
       {
          m_motor.set(0);
@@ -44,52 +45,21 @@ public class Climber implements Constants
       System.out.println("Climber.drive(" + output + ")");
    }
 
-   public int getDistance()
-   {
-      return m_motor.getEncPosition();
-   }
-
-   public void zeroEnc()
-   {
-      m_motor.setEncPosition(0);
-   }
-
+   // Allow going past the limit switches and unshutdown
    public void setOverride()
    {
-      m_isOverrideSet = true;
+      // override the forward and reverse limit switches
+      m_motor.enableLimitSwitch(false, false);
+      m_isShutDown = false;
+   }
+
+   public void disableOverride()
+   {
+     m_motor.enableLimitSwitch(true, true);
    }
 
    public void setShutDown()
    {
       m_isShutDown = true;
-   }
-
-   /**
-    * Limit motor values to the -1.0 to +1.0 range.
-    */
-   protected static double limit(double num)
-   {
-      if (num > 1.0)
-      {
-         return 1.0;
-      }
-      if (num < -1.0)
-      {
-         return -1.0;
-      }
-      return num;
-   }
-
-   /**
-    * Configure the scaling factor for using RobotDrive with motor controllers
-    * in a mode other than PercentVbus.
-    *
-    * @param maxOutput
-    *           Multiplied with the output percentage computed by the drive
-    *           functions.
-    */
-   public void setMaxOutput(double maxOutput)
-   {
-      m_maxOutput = maxOutput;
    }
 }

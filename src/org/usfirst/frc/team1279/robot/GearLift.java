@@ -8,6 +8,9 @@ public class GearLift {
 
   public static final double UP_VOLTAGE = 5;
   public static final double DOWN_VOLTAGE = -5;
+
+  public static final int TALON_MAX_CURRENT = 1;
+  public static final double SOFT_MAX_CURRENT = 0.5;
   
   public CANTalon masterTalon;
   public CANTalon slaveTalon;
@@ -22,13 +25,28 @@ public class GearLift {
     this.masterTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
     this.masterTalon.configNominalOutputVoltage(+0.0f, -0.0f);
     this.masterTalon.configPeakOutputVoltage(+12.0f, -12.0f);
+    this.masterTalon.setCurrentLimit(TALON_MAX_CURRENT);
+    this.masterTalon.EnableCurrentLimit(true);
     
     this.slaveTalon = new CANTalon(slave);
     this.slaveTalon.changeControlMode(TalonControlMode.Follower);
     this.slaveTalon.set(master);
     this.slaveTalon.configNominalOutputVoltage(+0.0f, -0.0f);
     this.slaveTalon.configPeakOutputVoltage(+12.0f, -12.0f);
+    this.slaveTalon.setCurrentLimit(TALON_MAX_CURRENT);
+    this.slaveTalon.EnableCurrentLimit(true);
     
+  }
+
+  public void periodic(){
+    
+    if(masterTalon.getOutputCurrent() >= SOFT_MAX_CURRENT){
+      this.stopGear();
+    }
+
+    if(slaveTalon.getOutputCurrent() >= SOFT_MAX_CURRENT){
+      this.stopGear();
+    }
   }
   
   public boolean raiseGear(){
@@ -63,4 +81,5 @@ public class GearLift {
 	      return false;
 	    }
   }
+
 }

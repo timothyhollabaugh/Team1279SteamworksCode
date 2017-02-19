@@ -25,7 +25,7 @@ public class Robot extends SampleRobot implements Constants
    Joystick     ctrlStick;
    GearClaw     claw;
    GearLift     gearLift;
-   TestClimber      climber;
+   Climber      climber;
    NetworkTable table;
 
    public Robot()
@@ -36,12 +36,13 @@ public class Robot extends SampleRobot implements Constants
       myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
       claw = new GearClaw(CLAW_CAN_ID);
       gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
-      climber = new TestClimber(CLIMBER_CAN_ID);
+      //climber = new TestClimber(CLIMBER_CAN_ID);
+      climber = new Climber(CLIMBER_CAN_ID);
 
       drvrStick = new Joystick(0);
       ctrlStick = new Joystick(1);
 
-      table = NetworkTable.getTable("targetData");
+      table = NetworkTable.getTable("RaspberryPi");
 
       myRobot.setExpiration(0.1);
    }
@@ -144,6 +145,7 @@ public class Robot extends SampleRobot implements Constants
       {
          double startTime = Timer.getFPGATimestamp();
 
+         // Drive train controls
          if (drvrStick.getRawButton(REVERSE_BTN_ID))
          {
             System.out.println("REVERSE BTN");
@@ -174,6 +176,12 @@ public class Robot extends SampleRobot implements Constants
             myRobot.arcadeDrive(0, drvrStick.getRawAxis(3));
          }
          
+         myRobot.arcadeDrive(drvrStick);
+
+
+
+
+         // Claw controls
          if (ctrlStick.getRawButton(OPEN_CLAW_BTN))
          {
             System.out.println("OPEN CLAW");
@@ -204,17 +212,28 @@ public class Robot extends SampleRobot implements Constants
         		 gearLift.driveGear(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS));
         	 }
          }
+
+         // call the periodic claw control loop
+         claw.periodic();
+
+
          
-         if (ctrlStick.getRawButton(RUN_CLIMBER_BTN))
-         {
-            System.out.println("CLIMB BTN");
-            climber.drive(.1);
-         }
+         // Climber Controls
          
-         if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
-         {
-            System.out.println("CLIMB R TRIGGER");
-            climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
+         if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1){
+
+           if (ctrlStick.getRawButton(RUN_CLIMBER_BTN))
+           {
+             System.out.println("CLIMB BTN");
+             climber.drive(.1);
+           }
+
+           if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
+           {
+             System.out.println("CLIMB R TRIGGER");
+             climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
+           }
+
          }else{
         	 climber.drive(0);
          }
@@ -222,28 +241,25 @@ public class Robot extends SampleRobot implements Constants
          if (ctrlStick.getRawButton(KILL_CLIMBER_BTN))
          {
             System.out.println("KILL BTN");
-            //climber.setShutDown();
+            climber.setShutDown();
          }
          
          if (ctrlStick.getRawButton(MANUAL_OVERIDE_BTN))
          {
             System.out.println("MANOVRD BTN");
-            //climber.setOverride();
+            climber.setOverride();
          }
          
-         myRobot.arcadeDrive(drvrStick);
          
 
-         // call the periodic claw control loop
-         claw.periodic();
-
+          /*
          // adjust polling on 20 ms intervals (was 5 mSec in template)
          double endTime = Timer.getFPGATimestamp();
          double deltaTime = endTime - startTime;
 
          if (deltaTime <= 0.020)
             Timer.delay(0.020 - deltaTime);
-
+          */
          /*
           * System.out.println(Timer.getFPGATimestamp() + ": " + "X[" +
           * stick.getY() + "]" + "Y[" + stick.getRawAxis(3) + "]");
