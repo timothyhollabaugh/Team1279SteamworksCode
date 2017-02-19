@@ -744,7 +744,9 @@ public class DriveTrain implements Constants, MotorSafety
       double adj = 0.0;
       int count = 0;
       // TODO: recalibrate to replace prior year's factor
-      final double COUNTS_PER_INCH = 78.0;
+      // ticks_per_rev/(wheel_dia*pi)
+      // 1440/(6.5*pi)
+      final double COUNTS_PER_INCH = 70.5; // Was 78
       double d = distance * COUNTS_PER_INCH;
 
       m_rearLeftMotor.setEncPosition(0);
