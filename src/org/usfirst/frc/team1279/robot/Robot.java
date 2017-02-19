@@ -1,6 +1,10 @@
 package org.usfirst.frc.team1279.robot;
 
+import com.ctre.CANTalon;
+import com.ctre.CANTalon.TalonControlMode;
+
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -19,20 +23,44 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends SampleRobot implements Constants {
-	DriveTrain myRobot;
+	RobotDrive myRobot;
 	Joystick drvrStick;
 	Joystick ctrlStick;
 	GearClaw claw;
 	GearLift gearLift;
 	Climber climber;
 	Vision vision;
+	
+	CANTalon frontLeftMotor;
+	CANTalon frontRightMotor;
+	CANTalon rearLeftMotor;
+	CANTalon rearRightMotor;
+
 	// NetworkTable table;
 
 	public Robot() {
 		// NOTE: All CAN channel and button IDs are defined in the Constants
 		// interface. (Yeah, its not a true Java interface, but the construct
 		// works...)
-		myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+		
+		frontLeftMotor = new CANTalon(LF_DRIVE_CAN_ID);
+		frontLeftMotor.changeControlMode(TalonControlMode.PercentVbus);
+		
+		rearLeftMotor = new CANTalon(LR_DRIVE_CAN_ID);
+		rearLeftMotor.changeControlMode(TalonControlMode.Follower);
+		rearLeftMotor.set(LF_DRIVE_CAN_ID);
+		
+		frontRightMotor = new CANTalon(RF_DRIVE_CAN_ID);
+		frontRightMotor.changeControlMode(TalonControlMode.PercentVbus);
+		
+		rearRightMotor = new CANTalon(RR_DRIVE_CAN_ID);
+		rearRightMotor.changeControlMode(TalonControlMode.Follower);
+		rearRightMotor.set(RF_DRIVE_CAN_ID);
+	
+		
+		//myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID,
+		//		RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+		myRobot = new RobotDrive(frontLeftMotor, frontRightMotor);
 		claw = new GearClaw(CLAW_CAN_ID);
 		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
 		// climber = new TestClimber(CLIMBER_CAN_ID);
@@ -67,75 +95,64 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void autonomous() {
-		
+
 		vision.setCamera(Vision.PI_CAMERA);
-		
+
 		String dash = "";
 
 		for (int i = 0; i < 5; i++) {
-			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "b").toLowerCase();
+			dash = SmartDashboard.getString("DB/String " + Integer.toString(i),
+					"b").toLowerCase();
 			if (dash.length() > 0)
 				break;
 		}
 
-		switch(dash){
+		switch (dash) {
 		case "b":
 			myRobot.setSafetyEnabled(false);
-			myRobot.autoDistance(0.5, 100);
+			//myRobot.autoDistance(0.5, 100);
 			break;
 		case "m":
 			myRobot.setSafetyEnabled(false);
-			myRobot.autoDistance(0.5, 70);
-			vision.doGearAdjust(myRobot);
-			myRobot.autoDistance(0.3, 12);
+			//myRobot.autoDistance(0.5, 70);
+			//vision.doGearAdjust(myRobot);
+			//myRobot.autoDistance(0.3, 12);
 			Timer.delay(0.5);
 			myRobot.drive(-.5, 0);
 			Timer.delay(2);
 			myRobot.drive(0, 0);
 		}
-		
+
 		/*
-		// if right turn
-		if (dash.toLowerCase().equals("r")) {
-			myRobot.setSafetyEnabled(false);
-			// advance 10" (TBD) at 10% throttle
-			myRobot.autoDistance(.10, 10);
-			myRobot.drive(0.2, 0.25); // right turn at 20% throttle
-			myRobot.drive(0.0, 0.0); // stop robot
-		} // else if left turn
-		else if (dash.toLowerCase().equals("l")) {
-			myRobot.setSafetyEnabled(false);
-			// advance 10" (TBD) at 10% throttle
-			myRobot.autoDistance(.10, 10);
-			myRobot.drive(0.2, -0.25); // left turn at 20% throttle
-			myRobot.drive(0.0, 0.0); // stop robot
-		} // else if straight or center
-		else if ((dash.toLowerCase().equals("s")) || (dash.toLowerCase().equals("c"))) {
-			myRobot.setSafetyEnabled(false);
-			// advance 8" (TBD) at 10% throttle
-			myRobot.autoDistance(.10, 8);
-			myRobot.drive(0.0, 0.0); // stop robot
-		}
-
-		Timer.delay(2.0); // for 2 seconds
-
-		// initiate targeting where:
-		// throttle: [+] forwards [-] backwards
-		// rotation: [+] right [-] left
-		double throttle = 0.1;
-		double rotation = 0;
-		while ((throttle != 0) && (rotation != 0) && (isAutonomous() && isEnabled())) {
-			myRobot.arcadeDrive(throttle, rotation);
-
-			// throttle = table.getNumber("throttle", 0);
-			// rotation = table.getNumber("rotation", 0);
-			System.out.println("throttle: " + throttle + " rotation:" + rotation);
-		}
-
-		myRobot.drive(0.0, 0.0); // stop robot
-
-		// TODO: Are any final claw actions needed to deliver the gear?
-		*/
+		 * // if right turn if (dash.toLowerCase().equals("r")) {
+		 * myRobot.setSafetyEnabled(false); // advance 10" (TBD) at 10% throttle
+		 * myRobot.autoDistance(.10, 10); myRobot.drive(0.2, 0.25); // right
+		 * turn at 20% throttle myRobot.drive(0.0, 0.0); // stop robot } // else
+		 * if left turn else if (dash.toLowerCase().equals("l")) {
+		 * myRobot.setSafetyEnabled(false); // advance 10" (TBD) at 10% throttle
+		 * myRobot.autoDistance(.10, 10); myRobot.drive(0.2, -0.25); // left
+		 * turn at 20% throttle myRobot.drive(0.0, 0.0); // stop robot } // else
+		 * if straight or center else if ((dash.toLowerCase().equals("s")) ||
+		 * (dash.toLowerCase().equals("c"))) { myRobot.setSafetyEnabled(false);
+		 * // advance 8" (TBD) at 10% throttle myRobot.autoDistance(.10, 8);
+		 * myRobot.drive(0.0, 0.0); // stop robot }
+		 * 
+		 * Timer.delay(2.0); // for 2 seconds
+		 * 
+		 * // initiate targeting where: // throttle: [+] forwards [-] backwards
+		 * // rotation: [+] right [-] left double throttle = 0.1; double
+		 * rotation = 0; while ((throttle != 0) && (rotation != 0) &&
+		 * (isAutonomous() && isEnabled())) { myRobot.arcadeDrive(throttle,
+		 * rotation);
+		 * 
+		 * // throttle = table.getNumber("throttle", 0); // rotation =
+		 * table.getNumber("rotation", 0); System.out.println("throttle: " +
+		 * throttle + " rotation:" + rotation); }
+		 * 
+		 * myRobot.drive(0.0, 0.0); // stop robot
+		 * 
+		 * // TODO: Are any final claw actions needed to deliver the gear?
+		 */
 	}
 
 	/**
@@ -146,8 +163,8 @@ public class Robot extends SampleRobot implements Constants {
 		myRobot.setSafetyEnabled(true);
 
 		// reverse initial direction
-		myRobot.reverseDirection();
-		
+		//myRobot.reverseDirection();
+
 		vision.setCamera(Vision.USB_CAMERA);
 
 		while (isOperatorControl() && isEnabled()) {
@@ -156,7 +173,7 @@ public class Robot extends SampleRobot implements Constants {
 			// Drive train controls
 			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 				System.out.println("REVERSE BTN");
-				myRobot.reverseDirection();
+				//myRobot.reverseDirection();
 			}
 
 			if (drvrStick.getRawButton(L_BMPER_BTN_ID)) {
@@ -179,7 +196,8 @@ public class Robot extends SampleRobot implements Constants {
 				myRobot.arcadeDrive(0, drvrStick.getRawAxis(3));
 			}
 
-			myRobot.arcadeDrive(drvrStick);
+			//myRobot.arcadeDrive(drvrStick);
+			myRobot.tankDrive(drvrStick.getRawAxis(1), drvrStick.getRawAxis(5));
 
 			// Claw controls
 			if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
@@ -192,7 +210,8 @@ public class Robot extends SampleRobot implements Constants {
 				claw.closeClaw();
 			}
 
-			if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
+			if (ctrlStick.getRawButton(RAISE_CLAW_BTN)
+					|| ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
 				if (ctrlStick.getRawButton(RAISE_CLAW_BTN)) {
 					System.out.println("RAISE GEAR BTN");
 					gearLift.raiseGear();
@@ -214,7 +233,8 @@ public class Robot extends SampleRobot implements Constants {
 
 			// Climber Controls
 
-			if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
+			if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)
+					|| ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
 
 				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
 					System.out.println("CLIMB BTN");
@@ -242,13 +262,13 @@ public class Robot extends SampleRobot implements Constants {
 				climber.setOverride();
 			}
 
-			/*
-			 * // adjust polling on 20 ms intervals (was 5 mSec in template)
-			 * double endTime = Timer.getFPGATimestamp(); double deltaTime =
-			 * endTime - startTime;
-			 * 
-			 * if (deltaTime <= 0.020) Timer.delay(0.020 - deltaTime);
-			 */
+			// adjust polling on 20 ms intervals (was 5 mSec in template)
+			double endTime = Timer.getFPGATimestamp();
+			double deltaTime = endTime - startTime;
+
+			if (deltaTime <= 0.020)
+				Timer.delay(0.020 - deltaTime);
+
 			/*
 			 * System.out.println(Timer.getFPGATimestamp() + ": " + "X[" +
 			 * stick.getY() + "]" + "Y[" + stick.getRawAxis(3) + "]");
