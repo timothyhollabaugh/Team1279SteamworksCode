@@ -70,15 +70,31 @@ public class Robot extends SampleRobot implements Constants {
 		
 		vision.setCamera(Vision.PI_CAMERA);
 		
-		/*
 		String dash = "";
 
 		for (int i = 0; i < 5; i++) {
-			dash = SmartDashboard.getString("DB/String " + Integer.toString(i));
+			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "b").toLowerCase();
 			if (dash.length() > 0)
 				break;
 		}
 
+		switch(dash){
+		case "b":
+			myRobot.setSafetyEnabled(false);
+			myRobot.autoDistance(0.5, 100);
+			break;
+		case "m":
+			myRobot.setSafetyEnabled(false);
+			myRobot.autoDistance(0.5, 70);
+			vision.doGearAdjust(myRobot);
+			myRobot.autoDistance(0.3, 12);
+			Timer.delay(0.5);
+			myRobot.drive(-.5, 0);
+			Timer.delay(2);
+			myRobot.drive(0, 0);
+		}
+		
+		/*
 		// if right turn
 		if (dash.toLowerCase().equals("r")) {
 			myRobot.setSafetyEnabled(false);
