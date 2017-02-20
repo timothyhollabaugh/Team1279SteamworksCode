@@ -23,14 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends SampleRobot implements Constants {
-	RobotDrive myRobot;
+	// RobotDrive myRobot;
+	DriveTrain drive;
 	Joystick drvrStick;
 	Joystick ctrlStick;
 	GearClaw claw;
 	GearLift gearLift;
 	Climber climber;
 	Vision vision;
-	
+
 	CANTalon frontLeftMotor;
 	CANTalon frontRightMotor;
 	CANTalon rearLeftMotor;
@@ -42,25 +43,26 @@ public class Robot extends SampleRobot implements Constants {
 		// NOTE: All CAN channel and button IDs are defined in the Constants
 		// interface. (Yeah, its not a true Java interface, but the construct
 		// works...)
-		
+
 		frontLeftMotor = new CANTalon(LF_DRIVE_CAN_ID);
 		frontLeftMotor.changeControlMode(TalonControlMode.PercentVbus);
-		
+
 		rearLeftMotor = new CANTalon(LR_DRIVE_CAN_ID);
 		rearLeftMotor.changeControlMode(TalonControlMode.Follower);
 		rearLeftMotor.set(LF_DRIVE_CAN_ID);
-		
+
 		frontRightMotor = new CANTalon(RF_DRIVE_CAN_ID);
 		frontRightMotor.changeControlMode(TalonControlMode.PercentVbus);
-		
+
 		rearRightMotor = new CANTalon(RR_DRIVE_CAN_ID);
 		rearRightMotor.changeControlMode(TalonControlMode.Follower);
 		rearRightMotor.set(RF_DRIVE_CAN_ID);
-	
-		
-		//myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID,
-		//		RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
-		myRobot = new RobotDrive(frontLeftMotor, frontRightMotor);
+
+		// myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID,
+		// RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+		// myRobot = new RobotDrive(frontLeftMotor, frontRightMotor);
+
+		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 		claw = new GearClaw(CLAW_CAN_ID);
 		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
 		// climber = new TestClimber(CLIMBER_CAN_ID);
@@ -73,12 +75,13 @@ public class Robot extends SampleRobot implements Constants {
 
 		// table = NetworkTable.getTable("RaspberryPi");
 
-		myRobot.setExpiration(0.1);
+		// myRobot.setExpiration(0.1);
 	}
 
 	@Override
 	public void robotInit() {
 		vision.init();
+		drive.setReversed(false);
 	}
 
 	/**
@@ -101,26 +104,39 @@ public class Robot extends SampleRobot implements Constants {
 		String dash = "";
 
 		for (int i = 0; i < 5; i++) {
-			dash = SmartDashboard.getString("DB/String " + Integer.toString(i),
-					"b").toLowerCase();
+			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "b").toLowerCase();
 			if (dash.length() > 0)
 				break;
 		}
 
 		switch (dash) {
 		case "b":
-			myRobot.setSafetyEnabled(false);
-			//myRobot.autoDistance(0.5, 100);
+			// myRobot.setSafetyEnabled(false);
+			// myRobot.autoDistance(0.5, 100);
+			drive.setReversed(true);
+			drive.encoderDistance(0.5, 100);
 			break;
+
 		case "m":
-			myRobot.setSafetyEnabled(false);
-			//myRobot.autoDistance(0.5, 70);
-			//vision.doGearAdjust(myRobot);
-			//myRobot.autoDistance(0.3, 12);
+			// myRobot.setSafetyEnabled(false);
+
+			drive.setReversed(true);
+
+			// myRobot.autoDistance(0.5, 70);
+			drive.encoderDistance(0.5, 70);
+
+			// vision.doGearAdjust(myRobot);
+			vision.doGearAdjust(drive);
+
+			// myRobot.autoDistance(0.3, 12);
+			drive.encoderDistance(0.3, 12);
+
 			Timer.delay(0.5);
-			myRobot.drive(-.5, 0);
+			// myRobot.drive(-.5, 0);
+			drive.drive(-0.5, 0);
 			Timer.delay(2);
-			myRobot.drive(0, 0);
+			// myRobot.drive(0, 0);
+			drive.drive(0, 0);
 		}
 
 		/*
@@ -160,10 +176,12 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void operatorControl() {
-		myRobot.setSafetyEnabled(true);
+		// myRobot.setSafetyEnabled(true);
 
 		// reverse initial direction
-		//myRobot.reverseDirection();
+		// myRobot.reverseDirection();
+
+		drive.setReversed(false);
 
 		vision.setCamera(Vision.USB_CAMERA);
 
@@ -173,31 +191,38 @@ public class Robot extends SampleRobot implements Constants {
 			// Drive train controls
 			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 				System.out.println("REVERSE BTN");
-				//myRobot.reverseDirection();
+				// myRobot.reverseDirection();
+				drive.setReversed(!drive.getReversed());
 			}
 
 			if (drvrStick.getRawButton(L_BMPER_BTN_ID)) {
 				System.out.println("L BUMPER BTN");
-				myRobot.arcadeDrive(0, -0.4);
+				// myRobot.arcadeDrive(0, -0.4);
+				drive.drive(0, -0.4);
 			}
 
 			if (drvrStick.getRawButton(R_BMPER_BTN_ID)) {
 				System.out.println("R BUMPER BTN");
-				myRobot.arcadeDrive(0, 0.4);
+				// myRobot.arcadeDrive(0, 0.4);
+				drive.drive(0, 0.4);
 			}
 
 			if (drvrStick.getRawAxis(2) > 0.1) {
 				System.out.println("L TRIGGER");
-				myRobot.arcadeDrive(0, -1 * drvrStick.getRawAxis(2));
+				// myRobot.arcadeDrive(0, -1 * drvrStick.getRawAxis(2));
+				drive.drive(0, -1 * drvrStick.getRawAxis(2));
 			}
 
 			if (drvrStick.getRawAxis(3) > 0.1) {
 				System.out.println("R TRIGGER");
-				myRobot.arcadeDrive(0, drvrStick.getRawAxis(3));
+				// myRobot.arcadeDrive(0, drvrStick.getRawAxis(3));
+				drive.drive(0, drvrStick.getRawAxis(3));
 			}
 
-			//myRobot.arcadeDrive(drvrStick);
-			myRobot.tankDrive(drvrStick.getRawAxis(1), drvrStick.getRawAxis(5));
+			// myRobot.arcadeDrive(drvrStick);
+			// myRobot.tankDrive(drvrStick.getRawAxis(1),
+			// drvrStick.getRawAxis(5));
+			drive.drive(drvrStick.getRawAxis(1), drvrStick.getRawAxis(5));
 
 			// Claw controls
 			if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
@@ -210,8 +235,7 @@ public class Robot extends SampleRobot implements Constants {
 				claw.closeClaw();
 			}
 
-			if (ctrlStick.getRawButton(RAISE_CLAW_BTN)
-					|| ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
+			if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
 				if (ctrlStick.getRawButton(RAISE_CLAW_BTN)) {
 					System.out.println("RAISE GEAR BTN");
 					gearLift.raiseGear();
@@ -233,8 +257,7 @@ public class Robot extends SampleRobot implements Constants {
 
 			// Climber Controls
 
-			if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)
-					|| ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
+			if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
 
 				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
 					System.out.println("CLIMB BTN");
@@ -281,11 +304,6 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void test() {
-		myRobot.drive(0.5, 0);
-		Timer.delay(0.5);
-		myRobot.drive(-0.5, 0);
-		Timer.delay(0.5);
-		myRobot.drive(0, 0);
 
 		/*
 		 * TalonTest leftLift = new TalonTest(5); TalonTest rightLift = new

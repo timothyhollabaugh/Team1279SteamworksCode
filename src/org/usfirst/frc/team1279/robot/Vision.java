@@ -54,9 +54,9 @@ public class Vision {
 	
 	public void doTurn(DriveTrain drive){
 		double turn = getTurn();
-		drive.arcadeDrive(0, TURN_AMOUNT * (turn >= 0 ? 1 : -1));
+		drive.drive(0, TURN_AMOUNT * (turn >= 0 ? 1 : -1));
 		Timer.delay(turn / 5);
-		drive.arcadeDrive(0, 0);
+		drive.drive(0, 0);
 	}
 	
 	public void doGearAdjust(DriveTrain drive){
