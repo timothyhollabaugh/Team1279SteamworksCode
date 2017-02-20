@@ -75,7 +75,11 @@ public class GearLift {
   
   public boolean driveGear(double amount){
 	  if(gearClaw.isClosedEnough()){
-	      masterTalon.set(amount);
+		  if(amount > 0){
+			  masterTalon.set(Math.abs(amount)*UP_VOLTAGE);
+		  }else{
+			  masterTalon.set(Math.abs(amount)*DOWN_VOLTAGE);
+		  }
 	      return true;
 	    }else{
 	      return false;

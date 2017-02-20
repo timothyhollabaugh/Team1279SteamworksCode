@@ -44,6 +44,10 @@ public class Climber implements Constants
 
       System.out.println("Climber.drive(" + output + ")");
    }
+   
+   public void stop(){
+	   m_motor.set(0);
+   }
 
    // Allow going past the limit switches and unshutdown
    public void setOverride()

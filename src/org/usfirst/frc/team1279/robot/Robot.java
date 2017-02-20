@@ -192,6 +192,7 @@ public class Robot extends SampleRobot implements Constants {
 			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 				System.out.println("REVERSE BTN");
 				// myRobot.reverseDirection();
+				vision.flipCamera();
 				drive.setReversed(!drive.getReversed());
 			}
 
@@ -264,15 +265,14 @@ public class Robot extends SampleRobot implements Constants {
 					climber.drive(.1);
 				}
 
-				if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right
-																	// trigger
+				if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
 				{
 					System.out.println("CLIMB R TRIGGER");
 					climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
 				}
 
 			} else {
-				climber.drive(0);
+				climber.stop();
 			}
 
 			if (ctrlStick.getRawButton(KILL_CLIMBER_BTN)) {

@@ -40,6 +40,14 @@ public class Vision {
 		return (int) table.getNumber(CAMERA_KEY, USB_CAMERA);
 	}
 	
+	public void flipCamera(){
+		if(getCamera() == PI_CAMERA){
+			setCamera(USB_CAMERA);
+		}else{
+			setCamera(PI_CAMERA);
+		}
+	}
+	
 	public int getProcess(){
 		return (int) table.getNumber(PROCESS_KEY, NO_PROCESSING);
 	}
