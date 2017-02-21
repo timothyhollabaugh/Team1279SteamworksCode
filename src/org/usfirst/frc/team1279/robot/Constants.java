@@ -30,11 +30,7 @@ public interface Constants {
 	// Drive Train constants
 	public final int COUNTS_PER_INCH = 78; // Not 70.5 because we changed the
 											// wheels...
-	public final int ACC_DISTANCE = 12 * COUNTS_PER_INCH; // Counts to use for
-															// accelerating and
-															// decelerating for
-															// encoder distance
-	public final double DECCEL_MIN_SPEED = 0.2; // The minimum speed to travel when deccelerating
+  public final int K_TURN = 0.03; // Used to maked sure we go straight during auton using the gyro
 
 	// breakout box buttons
 	// public final int OPEN_CLAW_BTN = 3; // blue button

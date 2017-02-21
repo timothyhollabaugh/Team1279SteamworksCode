@@ -36,6 +36,8 @@ public class Robot extends SampleRobot implements Constants {
 	CANTalon frontRightMotor;
 	CANTalon rearLeftMotor;
 	CANTalon rearRightMotor;
+
+  AHRS navx;
 	
 	boolean lastReverse = false;
 
@@ -60,24 +62,24 @@ public class Robot extends SampleRobot implements Constants {
 		rearRightMotor.changeControlMode(TalonControlMode.Follower);
 		rearRightMotor.set(RF_DRIVE_CAN_ID);
 
-		// myRobot = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID,
-		// RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
-		// myRobot = new RobotDrive(frontLeftMotor, frontRightMotor);
-
 		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 		claw = new GearClaw(CLAW_CAN_ID);
 		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
 		// climber = new TestClimber(CLIMBER_CAN_ID);
 		climber = new Climber(CLIMBER_CAN_ID);
 
+
+    try{
+      navx = new AHRS(SPI.Port.kMXP);
+    }catch(RuntimeException ex){
+      System.out.println("Could not connect to NavX");
+    }
+
 		drvrStick = new Joystick(0);
 		ctrlStick = new Joystick(1);
 
 		vision = new Vision();
 
-		// table = NetworkTable.getTable("RaspberryPi");
-
-		// myRobot.setExpiration(0.1);
 	}
 
 	@Override
