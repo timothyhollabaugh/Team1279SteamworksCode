@@ -36,6 +36,8 @@ public class Robot extends SampleRobot implements Constants {
 	CANTalon frontRightMotor;
 	CANTalon rearLeftMotor;
 	CANTalon rearRightMotor;
+	
+	boolean lastReverse = false;
 
 	// NetworkTable table;
 
@@ -82,6 +84,7 @@ public class Robot extends SampleRobot implements Constants {
 	public void robotInit() {
 		vision.init();
 		drive.setReversed(false);
+		SmartDashboard.putNumber("DB/Slider 0", 2);
 	}
 
 	/**
@@ -108,17 +111,21 @@ public class Robot extends SampleRobot implements Constants {
 			if (dash.length() > 0)
 				break;
 		}
+		
+		System.out.println(dash);
 
 		switch (dash) {
 		case "b":
 			// myRobot.setSafetyEnabled(false);
 			// myRobot.autoDistance(0.5, 100);
+			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
 			drive.encoderDistance(0.5, 100);
 			break;
 
 		case "m":
 			// myRobot.setSafetyEnabled(false);
+			drive.drive.setSafetyEnabled(false);
 
 			drive.setReversed(true);
 
@@ -176,14 +183,14 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void operatorControl() {
-		// myRobot.setSafetyEnabled(true);
+		drive.drive.setSafetyEnabled(true);
 
 		// reverse initial direction
 		// myRobot.reverseDirection();
 
 		drive.setReversed(false);
 
-		vision.setCamera(Vision.USB_CAMERA);
+		vision.setCamera(Vision.PI_CAMERA);
 
 		while (isOperatorControl() && isEnabled()) {
 			double startTime = Timer.getFPGATimestamp();
@@ -192,6 +199,7 @@ public class Robot extends SampleRobot implements Constants {
 			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 				System.out.println("REVERSE BTN");
 				// myRobot.reverseDirection();
+				
 				vision.flipCamera();
 				drive.setReversed(!drive.getReversed());
 			}
@@ -199,13 +207,13 @@ public class Robot extends SampleRobot implements Constants {
 			if (drvrStick.getRawButton(L_BMPER_BTN_ID)) {
 				System.out.println("L BUMPER BTN");
 				// myRobot.arcadeDrive(0, -0.4);
-				drive.drive(0, -0.4);
+				drive.drive(0, -0.5);
 			}
 
 			if (drvrStick.getRawButton(R_BMPER_BTN_ID)) {
 				System.out.println("R BUMPER BTN");
 				// myRobot.arcadeDrive(0, 0.4);
-				drive.drive(0, 0.4);
+				drive.drive(0, 0.5);
 			}
 
 			if (drvrStick.getRawAxis(2) > 0.1) {
@@ -223,7 +231,7 @@ public class Robot extends SampleRobot implements Constants {
 			// myRobot.arcadeDrive(drvrStick);
 			// myRobot.tankDrive(drvrStick.getRawAxis(1),
 			// drvrStick.getRawAxis(5));
-			drive.drive(drvrStick.getRawAxis(1), drvrStick.getRawAxis(5));
+			drive.drive(drvrStick.getRawAxis(5), drvrStick.getRawAxis(0));
 
 			// Claw controls
 			if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
