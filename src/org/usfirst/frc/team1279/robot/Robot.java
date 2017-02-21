@@ -2,12 +2,12 @@ package org.usfirst.frc.team1279.robot;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
+import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -62,7 +62,7 @@ public class Robot extends SampleRobot implements Constants {
 		rearRightMotor.changeControlMode(TalonControlMode.Follower);
 		rearRightMotor.set(RF_DRIVE_CAN_ID);
 
-		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID, navx);
 		claw = new GearClaw(CLAW_CAN_ID);
 		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
 		// climber = new TestClimber(CLIMBER_CAN_ID);
@@ -70,7 +70,7 @@ public class Robot extends SampleRobot implements Constants {
 
 
     try{
-      navx = new AHRS(SPI.Port.kMXP);
+			navx = new AHRS(SPI.Port.kMXP);
     }catch(RuntimeException ex){
       System.out.println("Could not connect to NavX");
     }
@@ -175,8 +175,7 @@ public class Robot extends SampleRobot implements Constants {
 		 * throttle + " rotation:" + rotation); }
 		 * 
 		 * myRobot.drive(0.0, 0.0); // stop robot
-		 * 
-		 * // TODO: Are any final claw actions needed to deliver the gear?
+		 *
 		 */
 	}
 
