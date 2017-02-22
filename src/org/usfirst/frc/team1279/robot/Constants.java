@@ -30,7 +30,7 @@ public interface Constants {
 	// Drive Train constants
 	public final int COUNTS_PER_INCH = 78; // Not 70.5 because we changed the
 											// wheels...
-  public final int K_TURN = 0.03; // Used to maked sure we go straight during auton using the gyro
+  public final double K_TURN = 0.03; // Used to maked sure we go straight during auton using the gyro
 
 	// breakout box buttons
 	// public final int OPEN_CLAW_BTN = 3; // blue button

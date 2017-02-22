@@ -2,7 +2,7 @@ package org.usfirst.frc.team1279.robot;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
@@ -37,7 +37,7 @@ public class Robot extends SampleRobot implements Constants {
 	CANTalon rearLeftMotor;
 	CANTalon rearRightMotor;
 
-  AHRS navx;
+  //AHRS navx;
 	
 	boolean lastReverse = false;
 
@@ -62,18 +62,18 @@ public class Robot extends SampleRobot implements Constants {
 		rearRightMotor.changeControlMode(TalonControlMode.Follower);
 		rearRightMotor.set(RF_DRIVE_CAN_ID);
 
-		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID, navx);
+		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 		claw = new GearClaw(CLAW_CAN_ID);
 		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
 		// climber = new TestClimber(CLIMBER_CAN_ID);
 		climber = new Climber(CLIMBER_CAN_ID);
 
 
-    try{
+    /*try{
 			navx = new AHRS(SPI.Port.kMXP);
     }catch(RuntimeException ex){
       System.out.println("Could not connect to NavX");
-    }
+    }*/
 
 		drvrStick = new Joystick(0);
 		ctrlStick = new Joystick(1);
@@ -86,7 +86,7 @@ public class Robot extends SampleRobot implements Constants {
 	public void robotInit() {
 		vision.init();
 		drive.setReversed(false);
-		SmartDashboard.putNumber("DB/Slider 0", 2);
+		SmartDashboard.putNumber("DB/Slider 0", 3.2);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class Robot extends SampleRobot implements Constants {
 			// myRobot.autoDistance(0.5, 100);
 			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
-			drive.encoderDistance(0.5, 100);
+			drive.encoderDistance(0.2, 55);
 			break;
 
 		case "m":
@@ -132,17 +132,20 @@ public class Robot extends SampleRobot implements Constants {
 			drive.setReversed(true);
 
 			// myRobot.autoDistance(0.5, 70);
-			drive.encoderDistance(0.5, 70);
+			drive.encoderDistance(0.2, 50);
 
 			// vision.doGearAdjust(myRobot);
 			vision.doGearAdjust(drive);
 
 			// myRobot.autoDistance(0.3, 12);
-			drive.encoderDistance(0.3, 12);
+			drive.encoderDistance(0.1, 12);
+			
+			//claw.openClaw();
 
-			Timer.delay(0.5);
+			Timer.delay(2);
+			
 			// myRobot.drive(-.5, 0);
-			drive.drive(-0.5, 0);
+			drive.drive(-0.1, 0);
 			Timer.delay(2);
 			// myRobot.drive(0, 0);
 			drive.drive(0, 0);

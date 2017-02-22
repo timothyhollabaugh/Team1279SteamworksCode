@@ -3,7 +3,6 @@ package org.usfirst.frc.team1279.robot;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,11 +20,11 @@ public class DriveTrain implements Constants {
 	double throttleScale = 1;
 	double turnScale = -1;
 
-	AHRS navx;
+	//AHRS navx;
 
-	public DriveTrain(int leftFrontId, int leftRearId, int rightFrontId, int rightRearId, AHRS navx) {
+	public DriveTrain(int leftFrontId, int leftRearId, int rightFrontId, int rightRearId) {
 
-		this.navx = navx;
+		//this.navx = navx;
 
 		frontLeftMotor = new CANTalon(leftFrontId);
 		frontLeftMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
@@ -79,9 +78,15 @@ public class DriveTrain implements Constants {
 	public void drive(double throttle, double turn) {
 		drive.arcadeDrive(throttle * throttleScale, turn * turnScale);
 
-		SmartDashboard.putString("DB/String 4", Double.toString(-throttleScale * frontLeftMotor.getEncPosition()));
+		SmartDashboard.putString("DB/String 4", Double.toString(-throttleScale * frontLeftMotor.get()));
 
-		SmartDashboard.putString("DB/String 9", Double.toString(throttleScale * frontRightMotor.getEncPosition()));
+		SmartDashboard.putString("DB/String 9", Double.toString(throttleScale * frontRightMotor.get()));
+		
+		
+		
+		SmartDashboard.putString("DB/String 5", Double.toString(frontLeftMotor.getOutputVoltage()));
+
+		SmartDashboard.putString("DB/String 6", Double.toString(frontRightMotor.getOutputVoltage()));
 	}
 
 	public void encoderDistance(double speed, double distance) {
@@ -105,13 +110,13 @@ public class DriveTrain implements Constants {
 
 			averagePos = (int) (rightPos + leftPos) / 2;
 
-			if (navx != null) {
-				drive.drive(speed * throttleScale, -navx.getAngle() * K_TURN);
-			} else {
+			//if (navx != null) {
+			//	drive.drive(speed * throttleScale, -navx.getAngle() * K_TURN);
+			//} else {
 				drive.drive(speed * throttleScale, 0);
-			}
+			//}
 
-			SmartDashboard.putString("DB/String 2", Double.toString(navx.getAngle()));
+			//SmartDashboard.putString("DB/String 2", Double.toString(navx.getAngle()));
 
 			SmartDashboard.putString("DB/String 3", Double.toString(-throttleScale * frontLeftMotor.get()));
 

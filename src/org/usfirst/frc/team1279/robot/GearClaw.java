@@ -10,8 +10,8 @@ public class GearClaw {
 
 	// CHANGE ALL CONSTANTS TO SANE VALUES
 
-	public static final double CLOSE_VOLTAGE = 2;
-	public static final double OPEN_VOLTAGE = -2;
+	public static final double CLOSE_VOLTAGE = 2.5;
+	public static final double OPEN_VOLTAGE = -2.5;
 
 	/**
 	 * The minimum position for grabbing a gear
@@ -32,12 +32,12 @@ public class GearClaw {
 	 * The current at which to trigger going into current control mode to hold
 	 * the gear
 	 */
-	public static final double CLAW_TRIGGER_CURRENT = 0.25;
+	public static final double CLAW_TRIGGER_CURRENT = 0.5;
 
 	/**
 	 * The voltage to target when grabbing a gear
 	 */
-	public double CLAW_GRAB_VOLTAGE = 1.8;
+	public double CLAW_GRAB_VOLTAGE = 3.2;
 
 	/**
 	 * The current limit on the talon
