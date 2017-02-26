@@ -88,8 +88,9 @@ public class DriveTrain implements Constants {
 
 		SmartDashboard.putString("DB/String 6", Double.toString(frontRightMotor.getOutputVoltage()));
 	}
+	
 
-	public void encoderDistance(double speed, double distance) {
+	public void encoderDistance(double speed, double distance, Vision vision) {
 		System.out.println("encoder Distanceing");
 		int counts = (int) (distance * COUNTS_PER_INCH); // Number of encoder counts to move
 
@@ -110,13 +111,7 @@ public class DriveTrain implements Constants {
 
 			averagePos = (int) (rightPos + leftPos) / 2;
 
-			//if (navx != null) {
-			//	drive.drive(speed * throttleScale, -navx.getAngle() * K_TURN);
-			//} else {
-				drive.drive(speed * throttleScale, 0);
-			//}
-
-			//SmartDashboard.putString("DB/String 2", Double.toString(navx.getAngle()));
+			drive.drive(speed * throttleScale, vision != null ? vision.getTurn() : 0);
 
 			SmartDashboard.putString("DB/String 3", Double.toString(-throttleScale * frontLeftMotor.get()));
 

@@ -20,7 +20,9 @@ public class Vision {
 	
 	public static final String TURN_KEY = "turn";
 	public static final double TURN_AMOUNT = 1;
-	public static final double TURN_ERROR = 5;
+	public static final double TURN_ERROR = 0.1;
+	
+	public static final String LOCK_KEY = "lock";
 
 	public NetworkTable table;
 
@@ -58,23 +60,5 @@ public class Vision {
 	
 	public double getTurn(){
 		return table.getNumber("turn", 0);
-	}
-	
-	public void doTurn(DriveTrain drive){
-		double turn = getTurn();
-		drive.drive(0, TURN_AMOUNT * (turn >= 0 ? 1 : -1));
-		Timer.delay(turn / 5);
-		drive.drive(0, 0);
-	}
-	
-	public void doGearAdjust(DriveTrain drive){
-		setProcess(GEAR_CONTINUOS_PROCESSING);
-		Timer.delay(0.1);
-		
-		while(Math.abs(getTurn()) > TURN_ERROR){
-			doTurn(drive);
-		}
-		
-		setProcess(NO_PROCESSING);
 	}
 }

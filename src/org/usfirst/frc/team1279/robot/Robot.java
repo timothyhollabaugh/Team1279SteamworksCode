@@ -115,33 +115,35 @@ public class Robot extends SampleRobot implements Constants {
 		}
 		
 		System.out.println(dash);
+		
+		if(dash.contains("base")){
+			dash = "b";
+		}else if(dash.contains("gear")){
+			dash = "g";
+		}
 
 		switch (dash) {
-		case "b":
-			// myRobot.setSafetyEnabled(false);
-			// myRobot.autoDistance(0.5, 100);
+		case "b": // Baseline
 			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
-			drive.encoderDistance(0.2, 55);
+			drive.encoderDistance(0.2, 55, null);
 			break;
 
-		case "m":
-			// myRobot.setSafetyEnabled(false);
+		case "g": // Gear
 			drive.drive.setSafetyEnabled(false);
 
 			drive.setReversed(true);
 
-			// myRobot.autoDistance(0.5, 70);
-			drive.encoderDistance(0.2, 50);
-
-			// vision.doGearAdjust(myRobot);
-			vision.doGearAdjust(drive);
-
-			// myRobot.autoDistance(0.3, 12);
-			drive.encoderDistance(0.1, 12);
+			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 			
-			//claw.openClaw();
-
+			drive.encoderDistance(0.2, 50, vision);
+			
+			while(vision.getTurn() > Vision.TURN_ERROR){
+				drive.drive(0, vision.getTurn());
+			}
+			
+			drive.encoderDistance(0.1, 12, vision);
+			
 			Timer.delay(2);
 			
 			// myRobot.drive(-.5, 0);
@@ -195,6 +197,7 @@ public class Robot extends SampleRobot implements Constants {
 		drive.setReversed(false);
 
 		vision.setCamera(Vision.PI_CAMERA);
+		vision.setProcess(Vision.NO_PROCESSING);
 
 		while (isOperatorControl() && isEnabled()) {
 			double startTime = Timer.getFPGATimestamp();
