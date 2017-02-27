@@ -4,8 +4,8 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
 //import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,13 +32,11 @@ public class Robot extends SampleRobot implements Constants {
 	Climber climber;
 	Vision vision;
 
-	CANTalon frontLeftMotor;
-	CANTalon frontRightMotor;
-	CANTalon rearLeftMotor;
-	CANTalon rearRightMotor;
+	DigitalInput testInput = new DigitalInput(9);
+	boolean test = false;
 
-  //AHRS navx;
-	
+	//AHRS navx;
+
 	boolean lastReverse = false;
 
 	// NetworkTable table;
@@ -47,46 +45,35 @@ public class Robot extends SampleRobot implements Constants {
 		// NOTE: All CAN channel and button IDs are defined in the Constants
 		// interface. (Yeah, its not a true Java interface, but the construct
 		// works...)
+	}
 
-		frontLeftMotor = new CANTalon(LF_DRIVE_CAN_ID);
-		frontLeftMotor.changeControlMode(TalonControlMode.PercentVbus);
-
-		rearLeftMotor = new CANTalon(LR_DRIVE_CAN_ID);
-		rearLeftMotor.changeControlMode(TalonControlMode.Follower);
-		rearLeftMotor.set(LF_DRIVE_CAN_ID);
-
-		frontRightMotor = new CANTalon(RF_DRIVE_CAN_ID);
-		frontRightMotor.changeControlMode(TalonControlMode.PercentVbus);
-
-		rearRightMotor = new CANTalon(RR_DRIVE_CAN_ID);
-		rearRightMotor.changeControlMode(TalonControlMode.Follower);
-		rearRightMotor.set(RF_DRIVE_CAN_ID);
-
-		drive = new DriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
-		claw = new GearClaw(CLAW_CAN_ID);
-		gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
-		// climber = new TestClimber(CLIMBER_CAN_ID);
-		climber = new Climber(CLIMBER_CAN_ID);
-
-
-    /*try{
-			navx = new AHRS(SPI.Port.kMXP);
-    }catch(RuntimeException ex){
-      System.out.println("Could not connect to NavX");
-    }*/
+	@Override
+	public void robotInit() {
+		SmartDashboard.putNumber("DB/Slider 0", 3.2);
+		
+		if(!testInput.get()) {
+			test = true;
+			SmartDashboard.putString("DB/String 5", "TEST ROBOT MODE");
+		}else{
+			SmartDashboard.putString("DB/String 5", "REAL ROBOT MODE");
+		}
+		
+		if(!test){
+			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+			claw = new GearClaw(CLAW_CAN_ID);
+			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID);
+			climber = new Climber(CLIMBER_CAN_ID);
+		}else{
+			drive = new TestDriveTrain(0, 1);
+		}
 
 		drvrStick = new Joystick(0);
 		ctrlStick = new Joystick(1);
 
 		vision = new Vision();
-
-	}
-
-	@Override
-	public void robotInit() {
 		vision.init();
+
 		drive.setReversed(false);
-		SmartDashboard.putNumber("DB/Slider 0", 3.2);
 	}
 
 	/**
@@ -113,12 +100,12 @@ public class Robot extends SampleRobot implements Constants {
 			if (dash.length() > 0)
 				break;
 		}
-		
+
 		System.out.println(dash);
-		
-		if(dash.contains("base")){
+
+		if (dash.contains("base")) {
 			dash = "b";
-		}else if(dash.contains("gear")){
+		} else if (dash.contains("gear")) {
 			dash = "g";
 		}
 
@@ -135,21 +122,19 @@ public class Robot extends SampleRobot implements Constants {
 			drive.setReversed(true);
 
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
-			
+
 			drive.encoderDistance(0.2, 50, vision);
-			
-			while(vision.getTurn() > Vision.TURN_ERROR){
+
+			while (vision.getTurn() > Vision.TURN_ERROR) {
 				drive.drive(0, vision.getTurn());
 			}
-			
+
 			drive.encoderDistance(0.1, 12, vision);
-			
+
 			Timer.delay(2);
-			
-			// myRobot.drive(-.5, 0);
+
 			drive.drive(-0.1, 0);
 			Timer.delay(2);
-			// myRobot.drive(0, 0);
 			drive.drive(0, 0);
 		}
 
@@ -192,8 +177,6 @@ public class Robot extends SampleRobot implements Constants {
 		drive.drive.setSafetyEnabled(true);
 
 		// reverse initial direction
-		// myRobot.reverseDirection();
-
 		drive.setReversed(false);
 
 		vision.setCamera(Vision.PI_CAMERA);
@@ -206,7 +189,7 @@ public class Robot extends SampleRobot implements Constants {
 			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 				System.out.println("REVERSE BTN");
 				// myRobot.reverseDirection();
-				
+
 				vision.flipCamera();
 				drive.setReversed(!drive.getReversed());
 			}
@@ -241,63 +224,66 @@ public class Robot extends SampleRobot implements Constants {
 			drive.drive(drvrStick.getRawAxis(5), drvrStick.getRawAxis(0));
 
 			// Claw controls
-			if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
-				System.out.println("OPEN CLAW");
-				claw.openClaw();
-			}
-
-			if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
-				System.out.println("CLOSE CLAW");
-				claw.closeClaw();
-			}
-
-			if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
-				if (ctrlStick.getRawButton(RAISE_CLAW_BTN)) {
-					System.out.println("RAISE GEAR BTN");
-					gearLift.raiseGear();
+			if(!test){
+				if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
+					System.out.println("OPEN CLAW");
+					claw.openClaw();
 				}
 
-				if (ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
-					System.out.println("LOWER GEAR BTN");
-					gearLift.lowerGear();
+				if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
+					System.out.println("CLOSE CLAW");
+					claw.closeClaw();
 				}
-			} else {
-				if (Math.abs(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS)) > 0.1) {
-					System.out.println("Running gear lift");
-					gearLift.driveGear(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS));
-				}
-			}
 
-			// call the periodic claw control loop
-			claw.periodic();
+				if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
+					if (ctrlStick.getRawButton(RAISE_CLAW_BTN)) {
+						System.out.println("RAISE GEAR BTN");
+						gearLift.raiseGear();
+					}
+
+					if (ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
+						System.out.println("LOWER GEAR BTN");
+						gearLift.lowerGear();
+					}
+				} else {
+					if (Math.abs(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS)) > 0.1) {
+						System.out.println("Running gear lift");
+						gearLift.driveGear(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS));
+					}
+				}
+
+				// call the periodic claw control loop
+				claw.periodic();
+			}
 
 			// Climber Controls
+			if(!test){
+				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
 
-			if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
+					if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
+						System.out.println("CLIMB BTN");
+						climber.drive(.1);
+					}
 
-				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
-					System.out.println("CLIMB BTN");
-					climber.drive(.1);
+					if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
+					{
+						System.out.println("CLIMB R TRIGGER");
+						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
+					}
+
+				} else {
+					climber.stop();
 				}
 
-				if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
-				{
-					System.out.println("CLIMB R TRIGGER");
-					climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
+				if (ctrlStick.getRawButton(KILL_CLIMBER_BTN)) {
+					System.out.println("KILL BTN");
+					climber.setShutDown();
 				}
 
-			} else {
-				climber.stop();
-			}
-
-			if (ctrlStick.getRawButton(KILL_CLIMBER_BTN)) {
-				System.out.println("KILL BTN");
-				climber.setShutDown();
-			}
-
-			if (ctrlStick.getRawButton(MANUAL_OVERIDE_BTN)) {
-				System.out.println("MANOVRD BTN");
-				climber.setOverride();
+				if (ctrlStick.getRawButton(MANUAL_OVERIDE_BTN)) {
+					System.out.println("MANOVRD BTN");
+					climber.setOverride();
+				}
 			}
 
 			// adjust polling on 20 ms intervals (was 5 mSec in template)
@@ -319,6 +305,13 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void test() {
+
+		vision.setCamera(Vision.PI_CAMERA);
+		vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
+
+		while(isTest() && isEnabled()){
+			drive.drive.arcadeDrive(0, vision.getTurn(), false);
+		}
 
 		/*
 		 * TalonTest leftLift = new TalonTest(5); TalonTest rightLift = new

@@ -94,12 +94,12 @@ public class GearClaw {
 	}
 
 	public void periodic() {
-		SmartDashboard.putString("DB/String 0",
-				Double.toString(clawTalon.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 1",
-				Double.toString(clawTalon.getPosition()));
-		SmartDashboard.putString("DB/String 2",
-				Double.toString(clawTalon.getOutputVoltage()));
+		//SmartDashboard.putString("DB/String 0",
+		//		Double.toString(clawTalon.getOutputCurrent()));
+		//SmartDashboard.putString("DB/String 1",
+		//		Double.toString(clawTalon.getPosition()));
+		//SmartDashboard.putString("DB/String 2",
+		//		Double.toString(clawTalon.getOutputVoltage()));
 		
 		CLAW_GRAB_VOLTAGE = SmartDashboard.getNumber("DB/Slider 0", 2);
 		System.out.println(CLAW_GRAB_VOLTAGE);

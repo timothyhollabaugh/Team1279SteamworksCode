@@ -1,0 +1,44 @@
+package org.usfirst.frc.team1279.robot;
+
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+public class TestDriveTrain extends DriveTrain implements Constants {
+
+	VictorSP frontLeftMotor;
+	VictorSP frontRightMotor;
+
+	public TestDriveTrain(int leftFrontId, int rightFrontId) {
+
+		frontLeftMotor = new VictorSP(leftFrontId);
+
+		frontRightMotor = new VictorSP(rightFrontId);
+
+		drive = new RobotDrive(frontLeftMotor, frontRightMotor);
+		drive.setExpiration(0.1);
+		
+		System.out.println("TestDriveTrain: " + leftFrontId + ":" + rightFrontId);
+	}
+	
+	// Because there are no encoders on the test drive base, distance is now the number of seconds to move * 10
+	public void encoderDistance(double speed, double distance, Vision vision) {
+		System.out.println("encoder Distanceing");
+
+		double startTime = Timer.getFPGATimestamp();
+		
+		while (startTime - Timer.getFPGATimestamp() < distance/10) {
+
+			drive.drive(speed * throttleScale, vision != null ? vision.getTurn() : 0);
+
+			SmartDashboard.putString("DB/String 3", Double.toString(-throttleScale * frontLeftMotor.get()));
+
+			SmartDashboard.putString("DB/String 8", Double.toString(throttleScale * frontRightMotor.get()));
+
+			Timer.delay(0.05);
+		}
+
+		drive.drive(0, 0);
+	}
+}
