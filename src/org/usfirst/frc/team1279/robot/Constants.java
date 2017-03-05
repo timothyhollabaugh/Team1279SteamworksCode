@@ -30,6 +30,24 @@ public interface Constants {
 	// Drive Train constants
 	public final int COUNTS_PER_INCH = 78; // Not 70.5 because we changed the wheels
 
+	// Vision constants
+	public final double VISION_MAX_TURN = 0.2;
+
+	// GearClaw Constants
+	public static final double CLAW_CLOSE_VOLTAGE = 12;
+	public static final double CLAW_OPEN_VOLTAGE = -12;
+	public static final double CLAW_GRAB_VOLTAGE = 3.2;
+
+	public static final double CLAW_OPEN_POS = 0.450;
+	public static final double CLAW_CLOSE_POS = 0.800;
+	public static final double CLAW_GEAR_MIN_POS = 0.500;
+	public static final double CLAW_GEAR_MAX_POS = 0.600;
+	public static final double CLAW_CLOSED_ENOUGH_POS = CLAW_GEAR_MIN_POS;
+
+	public static final double CLAW_TRIGGER_CURRENT = 1.75;
+	public static final int CLAW_MAX_CURRENT = 2;
+	public static final double CLAW_GEAR_CURRENT = 1;
+
 	// breakout box buttons
 	// public final int OPEN_CLAW_BTN = 3; // blue button
 	// public final int CLOSE_CLAW_BTN = 5; // green button

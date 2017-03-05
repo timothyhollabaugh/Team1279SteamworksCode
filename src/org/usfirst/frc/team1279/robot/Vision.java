@@ -20,9 +20,11 @@ public class Vision {
 	
 	public static final String TURN_KEY = "turn";
 	public static final double TURN_AMOUNT = 1;
-	public static final double TURN_ERROR = 0.1;
+	public static final double TURN_ERROR = 0.05;
 	
 	public static final String LOCK_KEY = "lock";
+	
+	public static final String DISTANCE_KEY = "distance";
 
 	public NetworkTable table;
 
@@ -60,5 +62,9 @@ public class Vision {
 	
 	public double getTurn(){
 		return table.getNumber("turn", 0);
+	}
+	
+	public double getDistance(){
+		return table.getNumber(DISTANCE_KEY, 0);
 	}
 }

@@ -28,9 +28,21 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 
 		double startTime = Timer.getFPGATimestamp();
 		
-		while (startTime - Timer.getFPGATimestamp() < distance/10) {
+		while (Timer.getFPGATimestamp() - startTime < distance/10) {
 
-			drive.drive(speed * throttleScale, vision != null ? vision.getTurn() : 0);
+			double turn = 0;
+			
+			if(vision != null){
+				turn = vision.getTurn();
+				if(turn > VISION_MAX_TURN){
+					turn = VISION_MAX_TURN;
+				}else if(turn < -VISION_MAX_TURN){
+					turn = -VISION_MAX_TURN;
+				}
+			}
+			
+
+			drive.drive(speed * throttleScale, turn);
 
 			SmartDashboard.putString("DB/String 3", Double.toString(-throttleScale * frontLeftMotor.get()));
 
