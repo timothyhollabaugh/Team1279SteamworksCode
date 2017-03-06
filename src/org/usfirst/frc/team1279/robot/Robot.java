@@ -65,7 +65,7 @@ public class Robot extends SampleRobot implements Constants {
 		if(!test){
 			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 			claw = new GearClaw(CLAW_CAN_ID, robotTable);
-			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, R_CLAW_LIFT_CAN_ID, robotTable);
+			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, robotTable);
 			climber = new Climber(CLIMBER_CAN_ID);
 		}else{
 			drive = new TestDriveTrain(0, 1);

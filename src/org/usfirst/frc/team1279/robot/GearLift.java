@@ -11,8 +11,8 @@ public class GearLift {
 	public static final double UP_VOLTAGE = 12;
 	public static final double DOWN_VOLTAGE = -12;
 
-	public static final int TALON_MAX_CURRENT = 2;
-	public static final double SOFT_MAX_CURRENT = 2;
+	public static final int TALON_MAX_CURRENT = 6;
+	public static final double SOFT_MAX_CURRENT = 6;
 
 	public CANTalon masterTalon;
 	public CANTalon slaveTalon;
@@ -29,9 +29,9 @@ public class GearLift {
 		masterTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		masterTalon.configNominalOutputVoltage(+0.0f, -0.0f);
 		masterTalon.configPeakOutputVoltage(+12.0f, -12.0f);
+		masterTalon.ConfigFwdLimitSwitchNormallyOpen(false);
 		masterTalon.setCurrentLimit(TALON_MAX_CURRENT);
 		masterTalon.EnableCurrentLimit(true);
-		masterTalon.setVoltageRampRate(24);
 
 		slaveTalon = new CANTalon(slave);
 		slaveTalon.changeControlMode(TalonControlMode.Follower);
@@ -54,7 +54,6 @@ public class GearLift {
 		masterTalon.configPeakOutputVoltage(+12.0f, -12.0f);
 		masterTalon.setCurrentLimit(TALON_MAX_CURRENT);
 		masterTalon.EnableCurrentLimit(true);
-		masterTalon.setVoltageRampRate(24);
 
 		this.robotTable = robotTable;
 	}
@@ -75,6 +74,17 @@ public class GearLift {
 		if (masterTalon.isFwdLimitSwitchClosed() || masterTalon.isRevLimitSwitchClosed()) {
 			//this.stopGear();
 		}
+		
+		gearClaw.down = isUp();
+		gearClaw.up = isDown();
+	}
+	
+	public boolean isUp(){
+		return !masterTalon.isFwdLimitSwitchClosed();
+	}
+	
+	public boolean isDown(){
+		return !masterTalon.isRevLimitSwitchClosed();
 	}
 
 	public boolean raiseGear() {

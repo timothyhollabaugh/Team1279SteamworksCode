@@ -20,11 +20,13 @@ public class GearClaw implements Constants {
 
 	private Mode state = Mode.OPEN;
 
-	private boolean open = true;
 	private boolean hasGear = false;
+	
+	public boolean up = false;
+	public boolean down = false;
 
 	private NetworkTable robotTable;
-
+	
 	public GearClaw(int clawPort, NetworkTable robotTable) {
 		clawTalon = new CANTalon(clawPort);
 
@@ -46,34 +48,18 @@ public class GearClaw implements Constants {
 		//clawTalon.setVoltageRampRate(24);
 
 		this.robotTable = robotTable;
-
 	}
 
 	public void openClaw() {
 		if(state != Mode.OPENING){
 			state = Mode.OPENING;
 		}
-		/*
-		if (!open) {
-			this.open = true;
-			this.hasGear = false;
-
-			//clawTalon.set(OPEN_VOLTAGE);
-		}
-		*/
 	}
 
 	public void closeClaw() {
 		if (state != Mode.CLOSING && state != Mode.GRABBING && state != Mode.MISSED) {
 			state = Mode.CLOSING;
 		}
-		/*
-		if (open) {
-			SmartDashboard.putString("DB/String 2", "Closing");
-			this.open = false;
-			//clawTalon.set(CLOSE_VOLTAGE);
-		}
-		*/
 	}
 
 	public boolean isClosedEnough() {
@@ -89,12 +75,12 @@ public class GearClaw implements Constants {
 	}
 
 	public void periodic() {
-		robotTable.putNumber("clawcurrent", clawTalon.getOutputCurrent());
-
 		double current = clawTalon.getOutputCurrent();
 		double position = clawTalon.getPosition();
 		double voltage = clawTalon.getOutputVoltage();
 		double speed = clawTalon.getSpeed();
+		
+		System.out.println(up + ":" + down);
 
 		switch (state) {
 
@@ -103,13 +89,13 @@ public class GearClaw implements Constants {
 			if (current > CLAW_MAX_CURRENT) {
 				clawTalon.set(0);
 			} else {
-				if (voltage != CLAW_OPEN_VOLTAGE) {
+				if ((down || up) && voltage != CLAW_OPEN_VOLTAGE) {
 					clawTalon.set(CLAW_OPEN_VOLTAGE);
 				}
 			}
 
-			if (position >= CLAW_OPEN_POS) {
-				state = Mode.OPENING;
+			if (position <= CLAW_OPEN_POS) {
+				state = Mode.OPEN;
 			}
 			break;
 
@@ -164,35 +150,5 @@ public class GearClaw implements Constants {
 		robotTable.putNumber("clawcurrent", current);
 		robotTable.putNumber("clawposition", position);
 		robotTable.putNumber("clawspeed", speed);
-
-		/*
-		if (!open) {
-			if (!hasGear) {
-				/*if (clawTalon.getOutputCurrent() >= CLAW_TRIGGER_CURRENT) {
-					if (clawTalon.getPosition() < CLAW_GEAR_MIN_POS) {
-						// The claw got stuck before it got to the gear
-						SmartDashboard.putString("DB/String 3", "Got Stuck!?");
-						openClaw();
-						// TODO
-					} else if (clawTalon.getPosition() > CLAW_GEAR_MAX_POS) {
-						// There was no gear
-						SmartDashboard.putString("DB/String 3", "No Gear :(");
-						// TODO
-					} else {
-						// There is a gear
-						SmartDashboard
-								.putString("DB/String 3", "Found a Gear!");
-						this.hasGear = true;
-						clawTalon.set(CLAW_GRAB_VOLTAGE);
-					}
-				}
-				if(clawTalon.getPosition() >= CLAW_GEAR_MIN_POS){
-					clawTalon.set(CLAW_GRAB_VOLTAGE);
-					hasGear = true;
-					robotTable.putBoolean("hasGear", true);
-				}
-			}
-		}
-		*/
 	}
 }
