@@ -81,7 +81,18 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 
 			averagePos = (int) (rightPos + leftPos) / 2;
 
-			drive.drive(speed * throttleScale, vision != null ? vision.getTurn() : 0);
+			double turn = 0;
+			
+			if(vision != null){
+				turn = vision.getTurn();
+				if(turn > VISION_MAX_TURN){
+					turn = VISION_MAX_TURN;
+				}else if(turn < -VISION_MAX_TURN){
+					turn = -VISION_MAX_TURN;
+				}
+			}
+
+			drive.drive(speed * throttleScale, turn);
 
 			SmartDashboard.putString("DB/String 3", Double.toString(-throttleScale * frontLeftMotor.get()));
 
@@ -90,7 +101,7 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 			SmartDashboard.putString("DB/String 4", Double.toString(throttleScale * frontLeftMotor.getEncPosition()));
 
 			SmartDashboard.putString("DB/String 9", Double.toString(-throttleScale * frontRightMotor.getEncPosition()));
-			System.out.println(leftPos + ":" + rightPos);
+			//System.out.println(leftPos + ":" + rightPos);
 
 			Timer.delay(0.05);
 		}

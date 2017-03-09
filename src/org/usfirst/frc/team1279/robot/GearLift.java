@@ -11,8 +11,8 @@ public class GearLift {
 	public static final double UP_VOLTAGE = 12;
 	public static final double DOWN_VOLTAGE = -12;
 
-	public static final int TALON_MAX_CURRENT = 6;
-	public static final double SOFT_MAX_CURRENT = 6;
+	public static final int TALON_MAX_CURRENT = 10;
+	public static final double SOFT_MAX_CURRENT = 10;
 
 	public CANTalon masterTalon;
 	public CANTalon slaveTalon;
@@ -60,7 +60,6 @@ public class GearLift {
 
 	public void periodic() {
 		
-		robotTable.putNumber("masterliftcurrent", masterTalon.getOutputCurrent());
 		if(slaveTalon != null) robotTable.putNumber("slaveliftcurrent", slaveTalon.getOutputCurrent());
 
 		if (masterTalon.getOutputCurrent() >= SOFT_MAX_CURRENT) {
@@ -77,6 +76,11 @@ public class GearLift {
 		
 		gearClaw.down = isUp();
 		gearClaw.up = isDown();
+
+		robotTable.putNumber("masterliftcurrent", masterTalon.getOutputCurrent());
+		robotTable.putBoolean("liftup", isUp());
+		robotTable.putBoolean("liftdown", isDown());
+		
 	}
 	
 	public boolean isUp(){

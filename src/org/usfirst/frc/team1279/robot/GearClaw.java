@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class GearClaw implements Constants {
@@ -15,18 +16,24 @@ public class GearClaw implements Constants {
 		GRABBING, // Trying to grab
 		MISSED, // Closed past a gear
 		OPENING, // Opening
-		OPEN // All the way open
+		OPEN, // All the way open
+		STOPPED_OPENING, // Could not open
+		STOPPED_CLOSING, // Could not close
 	}
 
 	private Mode state = Mode.OPEN;
 
 	private boolean hasGear = false;
-	
+
 	public boolean up = false;
 	public boolean down = false;
 
 	private NetworkTable robotTable;
-	
+
+	private DigitalInput gearSwitch = new DigitalInput(CLAW_GEAR_SWITCH_PORT);
+
+	private double lastSpeed = 0;
+
 	public GearClaw(int clawPort, NetworkTable robotTable) {
 		clawTalon = new CANTalon(clawPort);
 
@@ -40,7 +47,7 @@ public class GearClaw implements Constants {
 
 		clawTalon.setCurrentLimit(CLAW_MAX_CURRENT);
 		clawTalon.EnableCurrentLimit(true);
-		
+
 		clawTalon.setForwardSoftLimit(CLAW_CLOSE_POS);
 		clawTalon.setReverseSoftLimit(CLAW_OPEN_POS);
 
@@ -51,13 +58,19 @@ public class GearClaw implements Constants {
 	}
 
 	public void openClaw() {
-		if(state != Mode.OPENING){
+		if (state != Mode.OPENING) {
 			state = Mode.OPENING;
 		}
 	}
 
 	public void closeClaw() {
 		if (state != Mode.CLOSING && state != Mode.GRABBING && state != Mode.MISSED) {
+			state = Mode.CLOSING;
+		}
+	}
+
+	public void auto() {
+		if (!gearSwitch.get() && (state == Mode.OPEN || state == Mode.OPENING)) {
 			state = Mode.CLOSING;
 		}
 	}
@@ -79,7 +92,8 @@ public class GearClaw implements Constants {
 		double position = clawTalon.getPosition();
 		double voltage = clawTalon.getOutputVoltage();
 		double speed = clawTalon.getSpeed();
-		
+		boolean gear = !gearSwitch.get();
+
 		System.out.println(up + ":" + down);
 
 		switch (state) {
@@ -97,17 +111,31 @@ public class GearClaw implements Constants {
 			if (position <= CLAW_OPEN_POS) {
 				state = Mode.OPEN;
 			}
+			
+			if (lastSpeed != 0 && speed == 0){
+				state = Mode.STOPPED_OPENING;
+			}
+
 			break;
 
 		case OPEN:
 			hasGear = false;
-			if (position < CLAW_OPEN_POS) {
+			if (position <= CLAW_OPEN_POS) {
 				state = Mode.OPENING;
 			} else {
 				if (voltage != 0) {
 					clawTalon.set(0);
 				}
 			}
+
+			break;
+
+		case STOPPED_OPENING:
+			hasGear = false;
+			if (voltage != 0) {
+				clawTalon.set(0);
+			}
+
 			break;
 
 		case CLOSING:
@@ -119,7 +147,17 @@ public class GearClaw implements Constants {
 					clawTalon.set(CLAW_CLOSE_VOLTAGE);
 				}
 			}
+
+			if (lastSpeed != 0 && speed == 0){
+				state = Mode.STOPPED_OPENING;
+			}
 			break;
+
+		case STOPPED_CLOSING:
+			hasGear = false;
+			if (voltage != 0) {
+				clawTalon.set(0);
+			}
 
 		case GRABBING:
 			if (position > CLAW_GEAR_MAX_POS) {
@@ -150,5 +188,8 @@ public class GearClaw implements Constants {
 		robotTable.putNumber("clawcurrent", current);
 		robotTable.putNumber("clawposition", position);
 		robotTable.putNumber("clawspeed", speed);
+		robotTable.putBoolean("gearswitch", gear);
+
+		lastSpeed = speed;
 	}
 }

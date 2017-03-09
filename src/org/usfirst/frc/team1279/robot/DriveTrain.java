@@ -26,7 +26,7 @@ public abstract class DriveTrain {
 
 	public void drive(double throttle, double turn) {
 		drive.arcadeDrive(throttle * throttleScale, turn * turnScale);
-		System.out.println("Driving: " + throttle + ":" + turn);
+		//System.out.println("Driving: " + throttle + ":" + turn);
 	}
 	
 }

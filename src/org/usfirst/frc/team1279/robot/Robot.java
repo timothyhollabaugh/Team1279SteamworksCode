@@ -119,7 +119,9 @@ public class Robot extends SampleRobot implements Constants {
 		case "b": // Baseline
 			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
-			drive.encoderDistance(0.1, 55, null);
+			drive.encoderDistance(0.15, 72, null);
+			
+			
 			break;
 
 		case "g": // Gear
@@ -268,11 +270,11 @@ public class Robot extends SampleRobot implements Constants {
 				if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
 					System.out.println("OPEN CLAW");
 					claw.openClaw();
-				}
-
-				if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
+				}else if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
 					System.out.println("CLOSE CLAW");
 					claw.closeClaw();
+				}else{
+					claw.auto();
 				}
 				// call the periodic claw control loop
 				claw.periodic();
