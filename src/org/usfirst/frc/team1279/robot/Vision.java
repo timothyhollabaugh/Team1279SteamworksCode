@@ -1,6 +1,5 @@
 package org.usfirst.frc.team1279.robot;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Vision {

@@ -34,7 +34,7 @@ public class Robot extends SampleRobot implements Constants {
 	Vision vision;
 	NetworkTable robotTable;
 
-	DigitalInput testInput = new DigitalInput(9);
+	DigitalInput testInput = new DigitalInput(TEST_INPUT_PORT);
 	boolean test = false;
 
 	//AHRS navx;
@@ -51,8 +51,6 @@ public class Robot extends SampleRobot implements Constants {
 
 	@Override
 	public void robotInit() {
-		SmartDashboard.putNumber("DB/Slider 0", 3.2);
-		
 		if(!testInput.get()) {
 			test = true;
 			SmartDashboard.putString("DB/String 5", "TEST ROBOT MODE");
@@ -121,7 +119,6 @@ public class Robot extends SampleRobot implements Constants {
 			drive.setReversed(true);
 			drive.encoderDistance(0.15, 72, null);
 			
-			
 			break;
 
 		case "g": // Gear
@@ -163,10 +160,6 @@ public class Robot extends SampleRobot implements Constants {
 				drive.drive.arcadeDrive(0, turn, false);
 			}
 
-			//while (vision.getTurn() > Vision.TURN_ERROR) {
-			//	drive.drive(0, vision.getTurn());
-			//}
-			
 			Timer.delay(1);
 
 			drive.encoderDistance(0.1, 12, null);
@@ -177,36 +170,6 @@ public class Robot extends SampleRobot implements Constants {
 			Timer.delay(2);
 			drive.drive(0, 0);
 		}
-
-		/*
-		 * // if right turn if (dash.toLowerCase().equals("r")) {
-		 * myRobot.setSafetyEnabled(false); // advance 10" (TBD) at 10% throttle
-		 * myRobot.autoDistance(.10, 10); myRobot.drive(0.2, 0.25); // right
-		 * turn at 20% throttle myRobot.drive(0.0, 0.0); // stop robot } // else
-		 * if left turn else if (dash.toLowerCase().equals("l")) {
-		 * myRobot.setSafetyEnabled(false); // advance 10" (TBD) at 10% throttle
-		 * myRobot.autoDistance(.10, 10); myRobot.drive(0.2, -0.25); // left
-		 * turn at 20% throttle myRobot.drive(0.0, 0.0); // stop robot } // else
-		 * if straight or center else if ((dash.toLowerCase().equals("s")) ||
-		 * (dash.toLowerCase().equals("c"))) { myRobot.setSafetyEnabled(false);
-		 * // advance 8" (TBD) at 10% throttle myRobot.autoDistance(.10, 8);
-		 * myRobot.drive(0.0, 0.0); // stop robot }
-		 * 
-		 * Timer.delay(2.0); // for 2 seconds
-		 * 
-		 * // initiate targeting where: // throttle: [+] forwards [-] backwards
-		 * // rotation: [+] right [-] left double throttle = 0.1; double
-		 * rotation = 0; while ((throttle != 0) && (rotation != 0) &&
-		 * (isAutonomous() && isEnabled())) { myRobot.arcadeDrive(throttle,
-		 * rotation);
-		 * 
-		 * // throttle = table.getNumber("throttle", 0); // rotation =
-		 * table.getNumber("rotation", 0); System.out.println("throttle: " +
-		 * throttle + " rotation:" + rotation); }
-		 * 
-		 * myRobot.drive(0.0, 0.0); // stop robot
-		 *
-		 */
 	}
 
 	/**

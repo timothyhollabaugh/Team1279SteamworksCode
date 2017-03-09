@@ -1,6 +1,8 @@
 package org.usfirst.frc.team1279.robot;
 
 public interface Constants {
+	public static final int TEST_INPUT_PORT = 9;
+	
 	// CAN IDs
 	public final int LF_DRIVE_CAN_ID = 3;
 	public final int LR_DRIVE_CAN_ID = 4;
