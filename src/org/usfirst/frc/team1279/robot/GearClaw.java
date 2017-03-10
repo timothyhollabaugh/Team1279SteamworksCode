@@ -105,6 +105,10 @@ public class GearClaw implements Constants {
 			} else {
 				if ((down || up) && voltage != CLAW_OPEN_VOLTAGE) {
 					clawTalon.set(CLAW_OPEN_VOLTAGE);
+
+					if (lastSpeed != 0 && speed == 0){
+						state = Mode.STOPPED_OPENING;
+					}
 				}
 			}
 
@@ -112,9 +116,6 @@ public class GearClaw implements Constants {
 				state = Mode.OPEN;
 			}
 			
-			if (lastSpeed != 0 && speed == 0){
-				state = Mode.STOPPED_OPENING;
-			}
 
 			break;
 

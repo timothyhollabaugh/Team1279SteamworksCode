@@ -98,12 +98,19 @@ public class Robot extends SampleRobot implements Constants {
 		vision.setCamera(Vision.PI_CAMERA);
 
 		String dash = "";
-
+		
+		/*
 		for (int i = 0; i < 5; i++) {
-			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "b").toLowerCase();
+			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "").toLowerCase();
 			if (dash.length() > 0)
 				break;
 		}
+		*/
+		
+		if(robotTable.containsKey("automode")){
+			dash = robotTable.getString("automode", "b").toLowerCase();
+		}
+
 
 		System.out.println(dash);
 
@@ -128,8 +135,8 @@ public class Robot extends SampleRobot implements Constants {
 
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
-			//drive.encoderDistance(0.2, 50, vision);
-		
+			drive.encoderDistance(0.2, 60, vision);
+			/*
 			double time = Timer.getFPGATimestamp();
 			
 			while(vision.getDistance() < 93){
@@ -144,6 +151,7 @@ public class Robot extends SampleRobot implements Constants {
 
 				drive.drive.arcadeDrive(-0.1, turn, false);
 			}
+			*/
 			
 			//Timer.delay(1);
 
@@ -160,15 +168,15 @@ public class Robot extends SampleRobot implements Constants {
 				drive.drive.arcadeDrive(0, turn, false);
 			}
 
-			Timer.delay(1);
+			//Timer.delay(1);
 
 			drive.encoderDistance(0.1, 12, null);
 
 			Timer.delay(2);
 
-			drive.drive(-0.2, 0);
-			Timer.delay(2);
-			drive.drive(0, 0);
+			//drive.drive(-0.2, 0);
+			//Timer.delay(2);
+			//drive.drive(0, 0);
 		}
 	}
 
