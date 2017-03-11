@@ -70,7 +70,7 @@ public class GearClaw implements Constants {
 	}
 
 	public void auto() {
-		if (!gearSwitch.get() && (state == Mode.OPEN || state == Mode.OPENING)) {
+		if (!gearSwitch.get() && (state == Mode.OPEN || state == Mode.OPENING) && !up) {
 			state = Mode.CLOSING;
 		}
 	}
