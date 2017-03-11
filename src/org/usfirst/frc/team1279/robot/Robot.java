@@ -36,6 +36,8 @@ public class Robot extends SampleRobot implements Constants {
 
 	DigitalInput testInput = new DigitalInput(TEST_INPUT_PORT);
 	boolean test = false;
+	
+	boolean oldReverse = false;
 
 	//AHRS navx;
 
@@ -197,14 +199,21 @@ public class Robot extends SampleRobot implements Constants {
 
 		while (isOperatorControl() && isEnabled()) {
 			double startTime = Timer.getFPGATimestamp();
-
+			
 			// Drive train controls
-			if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
-				System.out.println("REVERSE BTN");
-				// myRobot.reverseDirection();
+			boolean reverse = drvrStick.getRawButton(REVERSE_BTN_ID);
+			
+			if(reverse != oldReverse){
+				if(reverse){
+					if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
+						System.out.println("REVERSE BTN");
+						// myRobot.reverseDirection();
 
-				vision.flipCamera();
-				drive.setReversed(!drive.getReversed());
+						vision.flipCamera();
+						drive.setReversed(!drive.getReversed());
+					}
+				}
+				oldReverse = reverse;
 			}
 
 			if (drvrStick.getRawButton(L_BMPER_BTN_ID)) {
@@ -274,18 +283,21 @@ public class Robot extends SampleRobot implements Constants {
 			}
 
 			// Climber Controls
-			if(!test){
-				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) {
+			if(climber != null){
+				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1 || ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS) > 0.1) {
 
 					if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
 						System.out.println("CLIMB BTN");
-						climber.drive(.1);
+						climber.drive(0.2);
 					}
 
 					if (ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1) // right trigger
 					{
 						System.out.println("CLIMB R TRIGGER");
 						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
+					}else if(ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS ) > 0.1){
+						System.out.println("CLIMB L TRIGGER");
+						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS)/2);
 					}
 
 				} else {
