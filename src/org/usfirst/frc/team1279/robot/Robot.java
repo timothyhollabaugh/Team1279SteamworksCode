@@ -204,6 +204,7 @@ public class Robot extends SampleRobot implements Constants {
 				}
 				*/
 
+
 		switch (dash) {
 		case "b": // Baseline
 			System.out.println("Baseline");
@@ -212,12 +213,12 @@ public class Robot extends SampleRobot implements Constants {
 			drive.encoderDistance(0.15, 72, null, 10);
 
 			break;
-
+		
 		case "g": // Gear
 			drive.drive.setSafetyEnabled(false);
-
+		
 			drive.setReversed(true);
-
+		
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
 			//drive.encoderDistance(0.2, 60, vision, 10);
@@ -248,12 +249,12 @@ public class Robot extends SampleRobot implements Constants {
 				} else if (turn < -VISION_MAX_TURN) {
 					turn = -VISION_MAX_TURN;
 				}
-
+		
 				System.out.println(turn);
-
+		
 				drive.drive.arcadeDrive(0, turn, false);
 			}
-
+		
 			//Timer.delay(1);
 
 			//drive.encoderDistance(0.1, 12, null, 2);
@@ -264,7 +265,6 @@ public class Robot extends SampleRobot implements Constants {
 			//Timer.delay(2);
 			//drive.drive(0, 0);
 		}
-
 	}
 
 	/**
@@ -428,7 +428,11 @@ public class Robot extends SampleRobot implements Constants {
 		/*
 		vision.setCamera(Vision.PI_CAMERA);
 		vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
 		while (isTest() && isEnabled()) {
 			double turn = vision.getTurn();
 			if (turn > VISION_MAX_TURN) {
@@ -436,9 +440,15 @@ public class Robot extends SampleRobot implements Constants {
 			} else if (turn < -VISION_MAX_TURN) {
 				turn = -VISION_MAX_TURN;
 			}
+<<<<<<< HEAD
 		
 			System.out.println(turn);
 		
+=======
+
+			System.out.println(turn);
+
+>>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
 			drive.drive.arcadeDrive(0, turn, false);
 		}
 		*/

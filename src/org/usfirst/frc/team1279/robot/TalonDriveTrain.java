@@ -89,7 +89,6 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 					turn = -VISION_MAX_TURN;
 				}
 			}
-
 			drive.drive(speed * throttleScale, turn);
 		}
 		drive.drive(0, 0);
