@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1279.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -10,7 +11,11 @@ public abstract class DriveTrain {
 	double throttleScale = 1;
 	double turnScale = -1;
 	
-	abstract public void encoderDistance(double speed, double distance, Vision vision);
+	abstract public void encoderDistance(double speed, double distance, Vision vision, double timeout);
+	abstract public void driveUntilDigital(double speed, Vision vision, DigitalInput input, double timeout);
+	
+	abstract public void resetEncoders();
+	abstract public int getAverageEncoders();
 
 	public void setReversed(boolean reverse) {
 		if (reverse) {

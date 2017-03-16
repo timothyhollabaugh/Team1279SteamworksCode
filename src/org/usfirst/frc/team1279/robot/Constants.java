@@ -27,11 +27,12 @@ public interface Constants {
 	public final int KILL_CLIMBER_BTN = 8; // start
 	public final int MANUAL_OVERIDE_BTN = 7; // select (back is for nerds)
 	public final int RUN_CLIMBER_AXIS = 3; // Right trigger
-	public final int RUN_CLIMBER_SLOW_AXIS = 4; // Left trigger? CHANGE THIS
+	public final int RUN_CLIMBER_SLOW_AXIS = 2; // Left trigger? CHANGE THIS
 	public final int RUN_GEAR_LIFT_AXIS = 1; // Left stick up/down
 
 	// Drive Train constants
 	public final int COUNTS_PER_INCH = 78; // Not 70.5 because we changed the wheels
+	public final int DISTANCE_PORT = 1;
 
 	// Vision constants
 	public final double VISION_MAX_TURN = 0.2;

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1279.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -9,6 +10,8 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 
 	VictorSP frontLeftMotor;
 	VictorSP frontRightMotor;
+	
+	double resetTime = 0;
 
 	public TestDriveTrain(int leftFrontId, int rightFrontId) {
 
@@ -23,7 +26,7 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 	}
 	
 	// Because there are no encoders on the test drive base, distance is now the number of seconds to move * 10
-	public void encoderDistance(double speed, double distance, Vision vision) {
+	public void encoderDistance(double speed, double distance, Vision vision, double timeout) {
 		System.out.println("encoder Distanceing");
 
 		double startTime = Timer.getFPGATimestamp();
@@ -52,5 +55,22 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 		}
 
 		drive.drive(0, 0);
+	}
+
+	@Override
+	public void resetEncoders() {
+		resetTime = Timer.getFPGATimestamp();
+	}
+
+	@Override
+	public int getAverageEncoders() {
+		// TODO Auto-generated method stub
+		return (int)(Timer.getFPGATimestamp() - resetTime)/10;
+	}
+
+	@Override
+	public void driveUntilDigital(double speed, Vision vision, DigitalInput input, double timeout) {
+		// TODO Auto-generated method stub
+		
 	}
 }

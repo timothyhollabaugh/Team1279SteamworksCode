@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import com.ctre.CANTalon.TalonControlMode;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,8 +60,43 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 		
 		System.out.println("TalonDriveTrain: " + leftFrontId + ":" + rightFrontId);
 	}
+	
+	public void resetEncoders(){
+		frontRightMotor.setEncPosition(0);
+		frontLeftMotor.setEncPosition(0);
+		rearRightMotor.setEncPosition(0);
+		rearLeftMotor.setEncPosition(0);
+	}
+	
+	public int getAverageEncoders(){
+		return (int)((frontRightMotor.getEncPosition() + frontLeftMotor.getEncPosition())/2.0);
+	}
+	
+	public void driveUntilDigital(double speed, Vision vision, DigitalInput input, double timeout){
+		System.out.println("Driving until");
+		double startTime = Timer.getFPGATimestamp();
+		
+		while((Timer.getFPGATimestamp() - startTime < timeout) && input.get()){
+			System.out.println(input.get());
+			
+			double turn = 0;
+			
+			if(vision != null){
+				turn = vision.getTurn();
+				if(turn > VISION_MAX_TURN){
+					turn = VISION_MAX_TURN;
+				}else if(turn < -VISION_MAX_TURN){
+					turn = -VISION_MAX_TURN;
+				}
+			}
 
-	public void encoderDistance(double speed, double distance, Vision vision) {
+			drive.drive(speed * throttleScale, turn);
+		}
+		drive.drive(0, 0);
+		System.out.println("Done driving until");
+	}
+
+	public void encoderDistance(double speed, double distance, Vision vision, double timeout) {
 		System.out.println("encoder Distanceing");
 		int counts = (int) (distance * COUNTS_PER_INCH); // Number of encoder counts to move
 
@@ -73,8 +109,10 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 		int rightPos = (int) -throttleScale * frontRightMotor.getEncPosition();
 
 		int averagePos = (int) (rightPos + leftPos) / 2;
-
-		while (averagePos < counts) {
+		
+		double startTime = Timer.getFPGATimestamp();
+		
+		while ((Timer.getFPGATimestamp() - startTime < timeout) && averagePos < counts) {
 
 			leftPos = (int) throttleScale * frontLeftMotor.getEncPosition();
 			rightPos = (int) -throttleScale * frontRightMotor.getEncPosition();
@@ -101,11 +139,14 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 			SmartDashboard.putString("DB/String 4", Double.toString(throttleScale * frontLeftMotor.getEncPosition()));
 
 			SmartDashboard.putString("DB/String 9", Double.toString(-throttleScale * frontRightMotor.getEncPosition()));
+
 			//System.out.println(leftPos + ":" + rightPos);
 
 			Timer.delay(0.05);
 		}
 
 		drive.drive(0, 0);
+		
+		System.out.println("Done encodering");
 	}
 }

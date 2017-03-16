@@ -33,15 +33,18 @@ public class Robot extends SampleRobot implements Constants {
 	Climber climber;
 	Vision vision;
 	NetworkTable robotTable;
+	DigitalInput distance;
 
 	DigitalInput testInput = new DigitalInput(TEST_INPUT_PORT);
 	boolean test = false;
-	
+
 	boolean oldReverse = false;
 
 	//AHRS navx;
 
 	boolean lastReverse = false;
+
+	int autoState = 0;
 
 	// NetworkTable table;
 
@@ -53,22 +56,23 @@ public class Robot extends SampleRobot implements Constants {
 
 	@Override
 	public void robotInit() {
-		if(!testInput.get()) {
+		if (!testInput.get()) {
 			test = true;
 			SmartDashboard.putString("DB/String 5", "TEST ROBOT MODE");
-		}else{
+		} else {
 			SmartDashboard.putString("DB/String 5", "REAL ROBOT MODE");
 		}
 
 		robotTable = NetworkTable.getTable("Robot");
-		
-		if(!test){
+
+		if (!test) {
 			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 			claw = new GearClaw(CLAW_CAN_ID, robotTable);
 			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, robotTable);
 			climber = new Climber(CLIMBER_CAN_ID);
-		}else{
-			drive = new TestDriveTrain(0, 1);
+		} else {
+			//drive = new TestDriveTrain(0, 1);
+			drive = new TalonDriveTrain(2, 3, 1, 4);
 			claw = new GearClaw(1, robotTable);
 			gearLift = new GearLift(claw, 2, robotTable);
 		}
@@ -78,6 +82,8 @@ public class Robot extends SampleRobot implements Constants {
 
 		vision = new Vision();
 		vision.init();
+
+		distance = new DigitalInput(DISTANCE_PORT);
 
 		drive.setReversed(false);
 	}
@@ -100,7 +106,7 @@ public class Robot extends SampleRobot implements Constants {
 		vision.setCamera(Vision.PI_CAMERA);
 
 		String dash = "";
-		
+
 		/*
 		for (int i = 0; i < 5; i++) {
 			dash = SmartDashboard.getString("DB/String " + Integer.toString(i), "").toLowerCase();
@@ -108,11 +114,10 @@ public class Robot extends SampleRobot implements Constants {
 				break;
 		}
 		*/
-		
-		if(robotTable.containsKey("automode")){
+
+		if (robotTable.containsKey("automode")) {
 			dash = robotTable.getString("automode", "b").toLowerCase();
 		}
-
 
 		System.out.println(dash);
 
@@ -122,12 +127,90 @@ public class Robot extends SampleRobot implements Constants {
 			dash = "g";
 		}
 
+		System.out.println(dash);
+		/*
+				double startTime = Timer.getFPGATimestamp();
+				double now = startTime;
+		
+				while (isAutonomous() && (now - startTime < 15)) {
+					now = Timer.getFPGATimestamp();
+					System.out.println(autoState);
+					System.out.println(drive.getAverageEncoders());
+					robotTable.putNumber("autoState", autoState);
+		
+					switch (dash) {
+		
+					case "b": // Baseline Auto
+		
+						switch(autoState){
+						case 0:
+							drive.resetEncoders();
+							autoState = 1;
+							break;
+						case 1:
+							if(drive.getAverageEncoders() < 72){
+								drive.drive(0.2, 0);
+							}else{
+								autoState = 2;
+							}
+							break;
+						case 2:
+							drive.drive(0, 0);
+						}
+						break;
+						
+					case "g": // Middle Gear
+						
+						switch (autoState){
+						case 0: // Reset state
+							drive.resetEncoders();
+							autoState = 1;
+							break;
+						case 1: // Drive to peg
+							if(drive.getAverageEncoders() < 60){
+								if(vision.getLock()){
+									drive.drive(0.2, vision.getTurn());
+								}else{
+									drive.drive(0.2, 0);
+								}
+							}else{
+								autoState = 2;
+							}
+							break;
+						case 2: // Final line up
+							double turn = vision.getTurn();
+							if(Math.abs(turn) > VISION_MAX_TURN){
+								drive.drive(0, turn);
+							}else{
+								autoState = 3;
+							}
+							break;
+						case 3:
+							drive.resetEncoders();
+							autoState = 4;
+							break;
+						case 4:
+							if(drive.getAverageEncoders() < 12){
+								drive.drive(0.15, 0);
+							}else{
+								autoState = 5;
+							}
+							break;
+						case 5:
+							drive.drive(0, 0);
+						}
+						break;
+					}
+				}
+				*/
+
 		switch (dash) {
 		case "b": // Baseline
+			System.out.println("Baseline");
 			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
-			drive.encoderDistance(0.15, 72, null);
-			
+			drive.encoderDistance(0.15, 72, null, 10);
+
 			break;
 
 		case "g": // Gear
@@ -137,31 +220,32 @@ public class Robot extends SampleRobot implements Constants {
 
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
-			drive.encoderDistance(0.2, 60, vision);
-			/*
-			double time = Timer.getFPGATimestamp();
+			//drive.encoderDistance(0.2, 60, vision, 10);
 			
-			while(vision.getDistance() < 93){
-				double turn = vision.getTurn();
-				if(turn > VISION_MAX_TURN){
-					turn = VISION_MAX_TURN;
-				}else if(turn < -VISION_MAX_TURN){
-					turn = -VISION_MAX_TURN;
-				}
+			drive.driveUntilDigital(0.2, null, distance, 10);
 
-				System.out.println(turn);
+			//double time = Timer.getFPGATimestamp();
 
-				drive.drive.arcadeDrive(-0.1, turn, false);
-			}
-			*/
-			
+			//while(vision.getDistance() < 93){
+			//	double turn = vision.getTurn();
+			//	if(turn > VISION_MAX_TURN){
+			//		turn = VISION_MAX_TURN;
+			//	}else if(turn < -VISION_MAX_TURN){
+			//		turn = -VISION_MAX_TURN;
+			//	}
+
+			//	System.out.println(turn);
+			//
+			//	drive.drive.arcadeDrive(-0.1, turn, false);
+			//}
+
 			//Timer.delay(1);
-
-			while(Math.abs(vision.getTurn()) > Vision.TURN_ERROR){
+			double startTime = Timer.getFPGATimestamp();
+			while ((Timer.getFPGATimestamp() - startTime < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
 				double turn = vision.getTurn();
-				if(turn > VISION_MAX_TURN){
+				if (turn > VISION_MAX_TURN) {
 					turn = VISION_MAX_TURN;
-				}else if(turn < -VISION_MAX_TURN){
+				} else if (turn < -VISION_MAX_TURN) {
 					turn = -VISION_MAX_TURN;
 				}
 
@@ -172,14 +256,15 @@ public class Robot extends SampleRobot implements Constants {
 
 			//Timer.delay(1);
 
-			drive.encoderDistance(0.1, 12, null);
+			//drive.encoderDistance(0.1, 12, null, 2);
 
-			Timer.delay(2);
+			//Timer.delay(2);
 
 			//drive.drive(-0.2, 0);
 			//Timer.delay(2);
 			//drive.drive(0, 0);
 		}
+
 	}
 
 	/**
@@ -194,17 +279,17 @@ public class Robot extends SampleRobot implements Constants {
 
 		vision.setCamera(Vision.PI_CAMERA);
 		vision.setProcess(Vision.NO_PROCESSING);
-	
+
 		claw.openClaw();
 
 		while (isOperatorControl() && isEnabled()) {
 			double startTime = Timer.getFPGATimestamp();
-			
+
 			// Drive train controls
 			boolean reverse = drvrStick.getRawButton(REVERSE_BTN_ID);
-			
-			if(reverse != oldReverse){
-				if(reverse){
+
+			if (reverse != oldReverse) {
+				if (reverse) {
 					if (drvrStick.getRawButton(REVERSE_BTN_ID)) {
 						System.out.println("REVERSE BTN");
 						// myRobot.reverseDirection();
@@ -246,21 +331,21 @@ public class Robot extends SampleRobot implements Constants {
 			drive.drive(drvrStick.getRawAxis(5), drvrStick.getRawAxis(0));
 
 			// Claw controls
-			if(claw != null){
+			if (claw != null) {
 				if (ctrlStick.getRawButton(OPEN_CLAW_BTN)) {
 					System.out.println("OPEN CLAW");
 					claw.openClaw();
-				}else if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
+				} else if (ctrlStick.getRawButton(CLOSE_CLAW_BTN)) {
 					System.out.println("CLOSE CLAW");
 					claw.closeClaw();
-				}else{
-					claw.auto();
+				} else {
+					//claw.auto();
 				}
 				// call the periodic claw control loop
 				claw.periodic();
-			}	
+			}
 
-			if(gearLift != null){
+			if (gearLift != null) {
 				if (ctrlStick.getRawButton(RAISE_CLAW_BTN) || ctrlStick.getRawButton(LOWER_CLAW_BTN)) {
 					if (ctrlStick.getRawButton(RAISE_CLAW_BTN)) {
 						System.out.println("RAISE GEAR BTN");
@@ -275,7 +360,7 @@ public class Robot extends SampleRobot implements Constants {
 					if (Math.abs(ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS)) > 0.1) {
 						System.out.println("Running gear lift");
 						gearLift.driveGear(-ctrlStick.getRawAxis(RUN_GEAR_LIFT_AXIS));
-					}else{
+					} else {
 						gearLift.stopGear();
 					}
 				}
@@ -283,7 +368,7 @@ public class Robot extends SampleRobot implements Constants {
 			}
 
 			// Climber Controls
-			if(climber != null){
+			if (climber != null) {
 				if (ctrlStick.getRawButton(RUN_CLIMBER_BTN) || ctrlStick.getRawAxis(RUN_CLIMBER_AXIS) > 0.1 || ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS) > 0.1) {
 
 					if (ctrlStick.getRawButton(RUN_CLIMBER_BTN)) {
@@ -295,9 +380,9 @@ public class Robot extends SampleRobot implements Constants {
 					{
 						System.out.println("CLIMB R TRIGGER");
 						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_AXIS));
-					}else if(ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS ) > 0.1){
+					} else if (ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS) > 0.1) {
 						System.out.println("CLIMB L TRIGGER");
-						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS)/2);
+						climber.drive(ctrlStick.getRawAxis(RUN_CLIMBER_SLOW_AXIS) / 2);
 					}
 
 				} else {
@@ -335,21 +420,28 @@ public class Robot extends SampleRobot implements Constants {
 	@Override
 	public void test() {
 
+		DigitalInput input = new DigitalInput(1);
+		while (isTest() && isEnabled()) {
+			robotTable.putBoolean("distance", input.get());
+		}
+
+		/*
 		vision.setCamera(Vision.PI_CAMERA);
 		vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
-
-		while(isTest() && isEnabled()){
+		
+		while (isTest() && isEnabled()) {
 			double turn = vision.getTurn();
-			if(turn > VISION_MAX_TURN){
+			if (turn > VISION_MAX_TURN) {
 				turn = VISION_MAX_TURN;
-			}else if(turn < -VISION_MAX_TURN){
+			} else if (turn < -VISION_MAX_TURN) {
 				turn = -VISION_MAX_TURN;
 			}
-			
+		
 			System.out.println(turn);
-			
+		
 			drive.drive.arcadeDrive(0, turn, false);
 		}
+		*/
 
 		/*
 		 * TalonTest leftLift = new TalonTest(5); TalonTest rightLift = new

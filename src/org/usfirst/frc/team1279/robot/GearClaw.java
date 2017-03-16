@@ -33,6 +33,8 @@ public class GearClaw implements Constants {
 	private DigitalInput gearSwitch = new DigitalInput(CLAW_GEAR_SWITCH_PORT);
 
 	private double lastSpeed = 0;
+	
+	private double calibrate_pos = 0;
 
 	public GearClaw(int clawPort, NetworkTable robotTable) {
 		clawTalon = new CANTalon(clawPort);
@@ -100,8 +102,16 @@ public class GearClaw implements Constants {
 
 		case OPENING:
 			hasGear = false;
+
+			if(clawTalon.isRevLimitSwitchClosed()){
+				state = Mode.OPEN;
+				calibrate_pos = position;
+				break;
+			}
+
 			if (current > CLAW_MAX_CURRENT) {
 				clawTalon.set(0);
+				state = Mode.STOPPED_OPENING;
 			} else {
 				if ((down || up) && voltage != CLAW_OPEN_VOLTAGE) {
 					clawTalon.set(CLAW_OPEN_VOLTAGE);
@@ -112,9 +122,9 @@ public class GearClaw implements Constants {
 				}
 			}
 
-			if (position <= CLAW_OPEN_POS) {
-				state = Mode.OPEN;
-			}
+			//if (position <= CLAW_OPEN_POS) {
+			//	state = Mode.OPEN;
+			//}
 			
 
 			break;
