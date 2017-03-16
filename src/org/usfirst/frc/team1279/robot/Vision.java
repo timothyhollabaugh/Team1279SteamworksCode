@@ -66,4 +66,8 @@ public class Vision {
 	public double getDistance(){
 		return table.getNumber(DISTANCE_KEY, 0);
 	}
+	
+	public boolean getLock(){
+		return table.getBoolean(LOCK_KEY, false);
+	}
 }

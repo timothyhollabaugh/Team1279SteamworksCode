@@ -9,6 +9,8 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 
 	VictorSP frontLeftMotor;
 	VictorSP frontRightMotor;
+	
+	double resetTime = 0;
 
 	public TestDriveTrain(int leftFrontId, int rightFrontId) {
 
@@ -52,5 +54,16 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 		}
 
 		drive.drive(0, 0);
+	}
+
+	@Override
+	public void resetEncoders() {
+		resetTime = Timer.getFPGATimestamp();
+	}
+
+	@Override
+	public int getAverageEncoders() {
+		// TODO Auto-generated method stub
+		return (int)(Timer.getFPGATimestamp() - resetTime)/10;
 	}
 }

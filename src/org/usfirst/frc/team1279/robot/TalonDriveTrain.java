@@ -59,6 +59,17 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 		
 		System.out.println("TalonDriveTrain: " + leftFrontId + ":" + rightFrontId);
 	}
+	
+	public void resetEncoders(){
+		frontRightMotor.setEncPosition(0);
+		frontLeftMotor.setEncPosition(0);
+		rearRightMotor.setEncPosition(0);
+		rearLeftMotor.setEncPosition(0);
+	}
+	
+	public int getAverageEncoders(){
+		return (int)((frontRightMotor.getEncPosition() + frontLeftMotor.getEncPosition())/2.0);
+	}
 
 	public void encoderDistance(double speed, double distance, Vision vision) {
 		System.out.println("encoder Distanceing");
@@ -101,7 +112,7 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 			SmartDashboard.putString("DB/String 4", Double.toString(throttleScale * frontLeftMotor.getEncPosition()));
 
 			SmartDashboard.putString("DB/String 9", Double.toString(-throttleScale * frontRightMotor.getEncPosition()));
-			//System.out.println(leftPos + ":" + rightPos);
+			System.out.println(leftPos + ":" + rightPos);
 
 			Timer.delay(0.05);
 		}

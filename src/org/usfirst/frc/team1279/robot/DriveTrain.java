@@ -11,6 +11,9 @@ public abstract class DriveTrain {
 	double turnScale = -1;
 	
 	abstract public void encoderDistance(double speed, double distance, Vision vision);
+	
+	abstract public void resetEncoders();
+	abstract public int getAverageEncoders();
 
 	public void setReversed(boolean reverse) {
 		if (reverse) {

@@ -11,8 +11,8 @@ public class GearLift {
 	public static final double UP_VOLTAGE = 12;
 	public static final double DOWN_VOLTAGE = -12;
 
-	public static final int TALON_MAX_CURRENT = 10;
-	public static final double SOFT_MAX_CURRENT = 10;
+	public static final int TALON_MAX_CURRENT = 15;
+	public static final double SOFT_MAX_CURRENT = 15;
 
 	public CANTalon masterTalon;
 	public CANTalon slaveTalon;
