@@ -61,11 +61,45 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 		System.out.println("TalonDriveTrain: " + leftFrontId + ":" + rightFrontId);
 	}
 	
+	public TalonDriveTrain(int leftFrontId, int rightFrontId) {
+
+		//this.navx = navx;
+
+		frontLeftMotor = new CANTalon(leftFrontId);
+		frontLeftMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		frontLeftMotor.reverseSensor(false);
+		frontLeftMotor.changeControlMode(TalonControlMode.PercentVbus);
+		frontLeftMotor.configNominalOutputVoltage(+0.0, -0.0);
+		frontLeftMotor.configPeakOutputVoltage(+12.0, -12.0);
+		//frontLeftMotor.reverseOutput(false);
+
+		frontRightMotor = new CANTalon(rightFrontId);
+		frontRightMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		frontRightMotor.reverseSensor(false);
+		frontRightMotor.changeControlMode(TalonControlMode.PercentVbus);
+		frontRightMotor.configNominalOutputVoltage(+0.0, -0.0);
+		frontRightMotor.configPeakOutputVoltage(+12.0, -12.0);
+		//frontRightMotor.reverseOutput(true);
+
+		drive = new RobotDrive(frontLeftMotor, frontRightMotor);
+		drive.setExpiration(0.1);
+
+		frontLeftMotor.setEncPosition(0);
+		frontRightMotor.setEncPosition(0);
+
+		
+		System.out.println("TalonDriveTrain: " + leftFrontId + ":" + rightFrontId);
+	}
+
 	public void resetEncoders(){
 		frontRightMotor.setEncPosition(0);
 		frontLeftMotor.setEncPosition(0);
-		rearRightMotor.setEncPosition(0);
-		rearLeftMotor.setEncPosition(0);
+		if(rearRightMotor != null){
+			rearRightMotor.setEncPosition(0);
+		}
+		if(rearLeftMotor != null){
+			rearLeftMotor.setEncPosition(0);
+		}
 	}
 	
 	public int getAverageEncoders(){

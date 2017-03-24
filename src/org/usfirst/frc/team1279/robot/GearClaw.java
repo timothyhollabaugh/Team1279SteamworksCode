@@ -35,6 +35,8 @@ public class GearClaw implements Constants {
 	private double lastSpeed = 0;
 	
 	private double calibrate_pos = 0;
+	
+	private boolean calibrated = false;
 
 	public GearClaw(int clawPort, NetworkTable robotTable) {
 		clawTalon = new CANTalon(clawPort);
@@ -50,8 +52,8 @@ public class GearClaw implements Constants {
 		clawTalon.setCurrentLimit(CLAW_MAX_CURRENT);
 		clawTalon.EnableCurrentLimit(true);
 
-		clawTalon.setForwardSoftLimit(CLAW_CLOSE_POS);
-		clawTalon.setReverseSoftLimit(CLAW_OPEN_POS);
+		//clawTalon.setForwardSoftLimit(CLAW_CLOSE_POS);
+		//clawTalon.setReverseSoftLimit(CLAW_OPEN_POS);
 
 		clawTalon.changeControlMode(TalonControlMode.Voltage);
 		//clawTalon.setVoltageRampRate(24);
@@ -76,37 +78,49 @@ public class GearClaw implements Constants {
 			state = Mode.CLOSING;
 		}
 	}
+	
+	public double getPosition(){
+		return clawTalon.getPosition() - calibrate_pos;
+	}
 
 	public boolean isClosedEnough() {
-		return clawTalon.getPosition() > CLAW_CLOSED_ENOUGH_POS;
+		return getPosition() > CLAW_CLOSED_ENOUGH_POS;
 	}
 
 	public boolean hasGear() {
-		return clawTalon.getPosition() >= CLAW_GEAR_MIN_POS && clawTalon.getPosition() <= CLAW_GEAR_MAX_POS;
+		return getPosition() >= CLAW_GEAR_MIN_POS && getPosition() <= CLAW_GEAR_MAX_POS;
 	}
 
 	public boolean isOpen() {
-		return clawTalon.getPosition() < CLAW_GEAR_MIN_POS;
+		return getPosition() < CLAW_GEAR_MIN_POS;
 	}
 
 	public void periodic() {
+		//System.out.println("Claw Periodic");
 		double current = clawTalon.getOutputCurrent();
-		double position = clawTalon.getPosition();
+		double position = getPosition();
 		double voltage = clawTalon.getOutputVoltage();
 		double speed = clawTalon.getSpeed();
 		boolean gear = !gearSwitch.get();
+		boolean limit = !clawTalon.isRevLimitSwitchClosed();
 
-		System.out.println(up + ":" + down);
+		//System.out.println(up + ":" + down);
 
 		switch (state) {
 
 		case OPENING:
 			hasGear = false;
 
-			if(clawTalon.isRevLimitSwitchClosed()){
-				state = Mode.OPEN;
-				calibrate_pos = position;
-				break;
+			if(limit){
+				if(!calibrated){
+					state = Mode.OPEN;
+					calibrate_pos = clawTalon.getPosition();
+
+					//clawTalon.setForwardSoftLimit(CLAW_CLOSE_POS + calibrate_pos);
+					//clawTalon.setReverseSoftLimit(CLAW_OPEN_POS + calibrate_pos);
+
+					break;
+				}
 			}
 
 			if (current > CLAW_MAX_CURRENT) {
@@ -200,7 +214,9 @@ public class GearClaw implements Constants {
 		robotTable.putNumber("clawposition", position);
 		robotTable.putNumber("clawspeed", speed);
 		robotTable.putBoolean("gearswitch", gear);
+		robotTable.putBoolean("gearlimitswitch", limit);
 
 		lastSpeed = speed;
+		//System.out.println("Claw Periodic done");
 	}
 }

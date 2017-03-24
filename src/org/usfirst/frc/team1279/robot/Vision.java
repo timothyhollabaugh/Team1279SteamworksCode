@@ -2,7 +2,7 @@ package org.usfirst.frc.team1279.robot;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
-public class Vision {
+public class Vision implements Constants{
 
 	public static final String TABLE = "RaspberryPi";
 
@@ -19,7 +19,7 @@ public class Vision {
 	
 	public static final String TURN_KEY = "turn";
 	public static final double TURN_AMOUNT = 1;
-	public static final double TURN_ERROR = 0.05;
+	public static final double TURN_ERROR = 0.01;
 	
 	public static final String LOCK_KEY = "lock";
 	
@@ -60,7 +60,7 @@ public class Vision {
 	}
 	
 	public double getTurn(){
-		return table.getNumber("turn", 0);
+		return table.getNumber("turn", 0)*VISION_TURN_K;
 	}
 	
 	public double getDistance(){

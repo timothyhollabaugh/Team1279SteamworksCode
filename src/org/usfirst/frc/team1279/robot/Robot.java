@@ -66,15 +66,18 @@ public class Robot extends SampleRobot implements Constants {
 		robotTable = NetworkTable.getTable("Robot");
 
 		if (!test) {
+			System.out.println("Real robot mode");
 			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
 			claw = new GearClaw(CLAW_CAN_ID, robotTable);
 			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, robotTable);
 			climber = new Climber(CLIMBER_CAN_ID);
 		} else {
+			System.out.println("Test robot mode");
 			//drive = new TestDriveTrain(0, 1);
-			drive = new TalonDriveTrain(2, 3, 1, 4);
-			claw = new GearClaw(1, robotTable);
-			gearLift = new GearLift(claw, 2, robotTable);
+			//drive = new TalonDriveTrain(2, 3, 1, 4);
+			drive = new TalonDriveTrain(1, 2);
+			//claw = new GearClaw(1, robotTable);
+			//gearLift = new GearLift(claw, 2, robotTable);
 		}
 
 		drvrStick = new Joystick(0);
@@ -102,10 +105,11 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void autonomous() {
+		System.out.println("Starting Autonomous");
 
 		vision.setCamera(Vision.PI_CAMERA);
 
-		String dash = "";
+		String dash = "b";
 
 		/*
 		for (int i = 0; i < 5; i++) {
@@ -128,133 +132,69 @@ public class Robot extends SampleRobot implements Constants {
 		}
 
 		System.out.println(dash);
-		/*
-				double startTime = Timer.getFPGATimestamp();
-				double now = startTime;
-		
-				while (isAutonomous() && (now - startTime < 15)) {
-					now = Timer.getFPGATimestamp();
-					System.out.println(autoState);
-					System.out.println(drive.getAverageEncoders());
-					robotTable.putNumber("autoState", autoState);
-		
-					switch (dash) {
-		
-					case "b": // Baseline Auto
-		
-						switch(autoState){
-						case 0:
-							drive.resetEncoders();
-							autoState = 1;
-							break;
-						case 1:
-							if(drive.getAverageEncoders() < 72){
-								drive.drive(0.2, 0);
-							}else{
-								autoState = 2;
-							}
-							break;
-						case 2:
-							drive.drive(0, 0);
-						}
-						break;
-						
-					case "g": // Middle Gear
-						
-						switch (autoState){
-						case 0: // Reset state
-							drive.resetEncoders();
-							autoState = 1;
-							break;
-						case 1: // Drive to peg
-							if(drive.getAverageEncoders() < 60){
-								if(vision.getLock()){
-									drive.drive(0.2, vision.getTurn());
-								}else{
-									drive.drive(0.2, 0);
-								}
-							}else{
-								autoState = 2;
-							}
-							break;
-						case 2: // Final line up
-							double turn = vision.getTurn();
-							if(Math.abs(turn) > VISION_MAX_TURN){
-								drive.drive(0, turn);
-							}else{
-								autoState = 3;
-							}
-							break;
-						case 3:
-							drive.resetEncoders();
-							autoState = 4;
-							break;
-						case 4:
-							if(drive.getAverageEncoders() < 12){
-								drive.drive(0.15, 0);
-							}else{
-								autoState = 5;
-							}
-							break;
-						case 5:
-							drive.drive(0, 0);
-						}
-						break;
-					}
-				}
-				*/
-
 
 		switch (dash) {
 		case "b": // Baseline
 			System.out.println("Baseline");
 			drive.drive.setSafetyEnabled(false);
 			drive.setReversed(true);
-			drive.encoderDistance(0.15, 72, null, 10);
+			drive.encoderDistance(0.5, 72, null, 10);
 
 			break;
-		
+
 		case "g": // Gear
 			drive.drive.setSafetyEnabled(false);
-		
+
 			drive.setReversed(true);
-		
+
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
 			//drive.encoderDistance(0.2, 60, vision, 10);
-			
-			drive.driveUntilDigital(0.2, null, distance, 10);
+
+			//drive.driveUntilDigital(0.2, null, distance, 10);
 
 			//double time = Timer.getFPGATimestamp();
-
-			//while(vision.getDistance() < 93){
-			//	double turn = vision.getTurn();
-			//	if(turn > VISION_MAX_TURN){
-			//		turn = VISION_MAX_TURN;
-			//	}else if(turn < -VISION_MAX_TURN){
-			//		turn = -VISION_MAX_TURN;
-			//	}
-
-			//	System.out.println(turn);
-			//
-			//	drive.drive.arcadeDrive(-0.1, turn, false);
-			//}
-
-			//Timer.delay(1);
 			double startTime = Timer.getFPGATimestamp();
-			while ((Timer.getFPGATimestamp() - startTime < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
-				double turn = vision.getTurn();
-				if (turn > VISION_MAX_TURN) {
-					turn = VISION_MAX_TURN;
-				} else if (turn < -VISION_MAX_TURN) {
-					turn = -VISION_MAX_TURN;
+			while((Timer.getFPGATimestamp() - startTime < 15) && isAutonomous() && vision.getDistance() < 93){
+				double startTime1 = Timer.getFPGATimestamp();
+				while((Timer.getFPGATimestamp() - startTime1 < 5) && isAutonomous() && vision.getDistance() < 93){
+					double turn = vision.getTurn();
+					if(turn > VISION_MAX_TURN){
+						turn = VISION_MAX_TURN;
+					}else if(turn < -VISION_MAX_TURN){
+						turn = -VISION_MAX_TURN;
+					}
+				
+					System.out.println("Driving: " + turn);
+				
+					drive.drive.arcadeDrive(-0.2, -turn, false);
+					
+					Timer.delay(0.05);
 				}
-		
-				System.out.println(turn);
-		
-				drive.drive.arcadeDrive(0, turn, false);
+	
+				//Timer.delay(1);
+				double startTime2 = Timer.getFPGATimestamp();
+				while ((Timer.getFPGATimestamp() - startTime2 < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
+					if (vision.getLock()) {
+						double turn = vision.getTurn();
+						System.out.print("Turning: " + vision.getTurn() + ":");
+						if (turn > VISION_MAX_TURN) {
+							turn = VISION_MAX_TURN;
+						} else if (turn < -VISION_MAX_TURN) {
+							turn = -VISION_MAX_TURN;
+						}
+	
+						System.out.println(turn);
+	
+						drive.drive.arcadeDrive(0, -turn, false);
+					} else {
+						drive.drive.arcadeDrive(0, 0);
+					}
+					
+					Timer.delay(0.05);
+				}
 			}
-		
+
 			//Timer.delay(1);
 
 			//drive.encoderDistance(0.1, 12, null, 2);
@@ -272,6 +212,7 @@ public class Robot extends SampleRobot implements Constants {
 	 */
 	@Override
 	public void operatorControl() {
+		System.out.println("Teloperated Starting");
 		drive.drive.setSafetyEnabled(true);
 
 		// reverse initial direction
@@ -280,8 +221,10 @@ public class Robot extends SampleRobot implements Constants {
 		vision.setCamera(Vision.PI_CAMERA);
 		vision.setProcess(Vision.NO_PROCESSING);
 
-		claw.openClaw();
-
+		if (claw != null) {
+			claw.openClaw();
+		}
+		System.out.println("Starting main loop");
 		while (isOperatorControl() && isEnabled()) {
 			double startTime = Timer.getFPGATimestamp();
 
@@ -328,7 +271,7 @@ public class Robot extends SampleRobot implements Constants {
 			// myRobot.arcadeDrive(drvrStick);
 			// myRobot.tankDrive(drvrStick.getRawAxis(1),
 			// drvrStick.getRawAxis(5));
-			drive.drive(drvrStick.getRawAxis(5), drvrStick.getRawAxis(0));
+			drive.drive(drvrStick.getRawAxis(5), drvrStick.getRawAxis(0) * 0.75);
 
 			// Claw controls
 			if (claw != null) {
@@ -339,7 +282,7 @@ public class Robot extends SampleRobot implements Constants {
 					System.out.println("CLOSE CLAW");
 					claw.closeClaw();
 				} else {
-					//claw.auto();
+					claw.auto();
 				}
 				// call the periodic claw control loop
 				claw.periodic();
@@ -428,11 +371,11 @@ public class Robot extends SampleRobot implements Constants {
 		/*
 		vision.setCamera(Vision.PI_CAMERA);
 		vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
-<<<<<<< HEAD
+		<<<<<<< HEAD
 		
-=======
-
->>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
+		=======
+		
+		>>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
 		while (isTest() && isEnabled()) {
 			double turn = vision.getTurn();
 			if (turn > VISION_MAX_TURN) {
@@ -440,15 +383,15 @@ public class Robot extends SampleRobot implements Constants {
 			} else if (turn < -VISION_MAX_TURN) {
 				turn = -VISION_MAX_TURN;
 			}
-<<<<<<< HEAD
+		<<<<<<< HEAD
 		
 			System.out.println(turn);
 		
-=======
-
+		=======
+		
 			System.out.println(turn);
-
->>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
+		
+		>>>>>>> c7101139de0aff77b90627db2659aeb51dc3f649
 			drive.drive.arcadeDrive(0, turn, false);
 		}
 		*/

@@ -35,7 +35,8 @@ public interface Constants {
 	public final int DISTANCE_PORT = 1;
 
 	// Vision constants
-	public final double VISION_MAX_TURN = 0.2;
+	public final double VISION_MAX_TURN = 0.3;
+	public final double VISION_TURN_K = 3;
 
 	// GearClaw Constants
 	public static final int CLAW_GEAR_SWITCH_PORT = 0;
@@ -44,10 +45,14 @@ public interface Constants {
 	public static final double CLAW_OPEN_VOLTAGE = -12;
 	public static final double CLAW_GRAB_VOLTAGE = 3.2;
 
-	public static final double CLAW_OPEN_POS = 0.510;
-	public static final double CLAW_CLOSE_POS = 0.700;
-	public static final double CLAW_GEAR_MIN_POS = 0.600;
-	public static final double CLAW_GEAR_MAX_POS = 0.650;
+	//public static final double CLAW_OPEN_POS = 0.510;
+	//public static final double CLAW_CLOSE_POS = 0.700;
+	//public static final double CLAW_GEAR_MIN_POS = 0.600;
+	//public static final double CLAW_GEAR_MAX_POS = 0.650;
+	public static final double CLAW_OPEN_POS = 0.000;
+	public static final double CLAW_CLOSE_POS = 0.190;
+	public static final double CLAW_GEAR_MIN_POS = 0.090;
+	public static final double CLAW_GEAR_MAX_POS = 0.140;
 	public static final double CLAW_CLOSED_ENOUGH_POS = CLAW_GEAR_MIN_POS;
 
 	public static final double CLAW_TRIGGER_CURRENT = 1.75;
