@@ -143,6 +143,7 @@ public class Robot extends SampleRobot implements Constants {
 			break;
 
 		case "g": // Gear
+
 			drive.drive.setSafetyEnabled(false);
 
 			drive.setReversed(true);
@@ -155,45 +156,79 @@ public class Robot extends SampleRobot implements Constants {
 
 			//double time = Timer.getFPGATimestamp();
 			double startTime = Timer.getFPGATimestamp();
-			while((Timer.getFPGATimestamp() - startTime < 15) && isAutonomous() && vision.getDistance() < 93){
-				double startTime1 = Timer.getFPGATimestamp();
-				while((Timer.getFPGATimestamp() - startTime1 < 5) && isAutonomous() && vision.getDistance() < 93){
+			//while((Timer.getFPGATimestamp() - startTime < 15) && isAutonomous() && vision.getDistance() < 80){
+			double startTime1 = Timer.getFPGATimestamp();
+			//double startEncoders = drive.getAverageEncoders();
+			drive.resetEncoders();
+			while ((Timer.getFPGATimestamp() - startTime1 < 10) && isAutonomous() && drive.getAverageEncoders() < 72 * COUNTS_PER_INCH) {
+				double turn = vision.getTurn();
+				if (turn > VISION_MAX_TURN) {
+					turn = VISION_MAX_TURN;
+				} else if (turn < -VISION_MAX_TURN) {
+					turn = -VISION_MAX_TURN;
+				}
+
+				System.out.println("Driving: " + turn);
+
+				if (drive.getAverageEncoders() < 50 * COUNTS_PER_INCH) {
+					drive.drive.arcadeDrive(-0.15, -turn, false);
+				}else{
+					drive.drive.arcadeDrive(-0.15, 0, false);
+				}
+
+				robotTable.putNumber("encoders", drive.getAverageEncoders());
+
+				Timer.delay(0.01);
+			}
+
+			drive.drive.arcadeDrive(0, 0);
+/*
+			//Timer.delay(1);
+			double startTime2 = Timer.getFPGATimestamp();
+			while ((Timer.getFPGATimestamp() - startTime2 < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
+				if (vision.getLock()) {
 					double turn = vision.getTurn();
-					if(turn > VISION_MAX_TURN){
+					System.out.print("Turning: " + vision.getTurn() + ":");
+					if (turn > VISION_MAX_TURN) {
 						turn = VISION_MAX_TURN;
-					}else if(turn < -VISION_MAX_TURN){
+					} else if (turn < -VISION_MAX_TURN) {
 						turn = -VISION_MAX_TURN;
 					}
-				
-					System.out.println("Driving: " + turn);
-				
-					drive.drive.arcadeDrive(-0.2, -turn, false);
-					
-					Timer.delay(0.05);
+
+					System.out.println(turn);
+
+					drive.drive.arcadeDrive(0, -turn, false);
+				} else {
+					drive.drive.arcadeDrive(0, 0);
 				}
-	
-				//Timer.delay(1);
-				double startTime2 = Timer.getFPGATimestamp();
-				while ((Timer.getFPGATimestamp() - startTime2 < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
-					if (vision.getLock()) {
-						double turn = vision.getTurn();
-						System.out.print("Turning: " + vision.getTurn() + ":");
-						if (turn > VISION_MAX_TURN) {
-							turn = VISION_MAX_TURN;
-						} else if (turn < -VISION_MAX_TURN) {
-							turn = -VISION_MAX_TURN;
-						}
-	
-						System.out.println(turn);
-	
-						drive.drive.arcadeDrive(0, -turn, false);
-					} else {
-						drive.drive.arcadeDrive(0, 0);
-					}
-					
-					Timer.delay(0.05);
-				}
+
+				Timer.delay(0.05);
 			}
+			//}
+*/
+			Timer.delay(1);
+
+			//drive.encoderDistance(0.15, 9, null, 5);
+
+			//double startTime3 = Timer.getFPGATimestamp();
+			//drive.resetEncoders();
+			//double startEncoders2 = drive.getAverageEncoders();
+			//while ((Timer.getFPGATimestamp() - startTime3 < 3) && isAutonomous() && drive.getAverageEncoders() < 9 * COUNTS_PER_INCH) {
+			//double turn = vision.getTurn();
+			//if (turn > VISION_MAX_TURN) {
+			//	turn = VISION_MAX_TURN;
+			//} else if (turn < -VISION_MAX_TURN) {
+			//	turn = -VISION_MAX_TURN;
+			//}
+
+			//System.out.println("Driving: " + turn);
+
+			//drive.drive.arcadeDrive(-0.15, 0, false);
+
+			//robotTable.putNumber("encoders", drive.getAverageEncoders());
+
+			//Timer.delay(0.01);
+			//}
 
 			//Timer.delay(1);
 

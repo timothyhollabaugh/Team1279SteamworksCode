@@ -103,7 +103,7 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 	}
 	
 	public int getAverageEncoders(){
-		return (int)((frontRightMotor.getEncPosition() + frontLeftMotor.getEncPosition())/2.0);
+		return (int)((frontRightMotor.getEncPosition() + -frontLeftMotor.getEncPosition())/2.0);
 	}
 	
 	public void driveUntilDigital(double speed, Vision vision, DigitalInput input, double timeout){

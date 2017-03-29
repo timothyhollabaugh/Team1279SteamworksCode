@@ -36,7 +36,7 @@ public interface Constants {
 
 	// Vision constants
 	public final double VISION_MAX_TURN = 0.3;
-	public final double VISION_TURN_K = 3;
+	public final double VISION_TURN_K = 1;
 
 	// GearClaw Constants
 	public static final int CLAW_GEAR_SWITCH_PORT = 0;
