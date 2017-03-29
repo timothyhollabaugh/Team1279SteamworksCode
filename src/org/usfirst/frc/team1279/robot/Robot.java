@@ -171,7 +171,7 @@ public class Robot extends SampleRobot implements Constants {
 				System.out.println("Driving: " + turn);
 
 				if (drive.getAverageEncoders() < 50 * COUNTS_PER_INCH) {
-					drive.drive.arcadeDrive(-0.15, -turn, false);
+					drive.drive.arcadeDrive(-0.2, -turn, false);
 				}else{
 					drive.drive.arcadeDrive(-0.15, 0, false);
 				}
