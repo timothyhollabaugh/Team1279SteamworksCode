@@ -73,4 +73,10 @@ public class TestDriveTrain extends DriveTrain implements Constants {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void encoderTurn(double speed, double distance, double timeout) {
+		// TODO Auto-generated method stub
+		
+	}
 }

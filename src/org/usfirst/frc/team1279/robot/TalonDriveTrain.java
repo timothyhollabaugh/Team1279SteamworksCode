@@ -7,6 +7,7 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TalonDriveTrain extends DriveTrain implements Constants {
@@ -15,10 +16,14 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 	CANTalon frontRightMotor;
 	CANTalon rearLeftMotor;
 	CANTalon rearRightMotor;
+	
+	NetworkTable robotTable;
 
 
-	public TalonDriveTrain(int leftFrontId, int leftRearId, int rightFrontId, int rightRearId) {
+	public TalonDriveTrain(int leftFrontId, int leftRearId, int rightFrontId, int rightRearId, NetworkTable robotTable) {
 
+		this.robotTable = robotTable;
+		
 		//this.navx = navx;
 
 		frontLeftMotor = new CANTalon(leftFrontId);
@@ -61,7 +66,9 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 		System.out.println("TalonDriveTrain: " + leftFrontId + ":" + rightFrontId);
 	}
 	
-	public TalonDriveTrain(int leftFrontId, int rightFrontId) {
+	public TalonDriveTrain(int leftFrontId, int rightFrontId, NetworkTable robotTable) {
+		
+		this.robotTable = robotTable;
 
 		//this.navx = navx;
 
@@ -172,6 +179,60 @@ public class TalonDriveTrain extends DriveTrain implements Constants {
 			SmartDashboard.putString("DB/String 4", Double.toString(throttleScale * frontLeftMotor.getEncPosition()));
 
 			SmartDashboard.putString("DB/String 9", Double.toString(-throttleScale * frontRightMotor.getEncPosition()));
+
+			//System.out.println(leftPos + ":" + rightPos);
+
+			Timer.delay(0.05);
+		}
+
+		drive.drive(0, 0);
+		
+		System.out.println("Done encodering");
+	}
+	
+	public void encoderTurn(double speed, double distance, double timeout){
+		System.out.println("encoder turning");
+		
+		int counts = (int) (distance * COUNTS_PER_INCH); // Number of encoder counts to move
+		
+
+		frontLeftMotor.setEncPosition(0);
+		frontRightMotor.setEncPosition(0);
+		
+		Timer.delay(1);
+
+		SmartDashboard.putString("DB/String 7", Double.toString(counts));
+
+		int leftPos = Math.abs((int) throttleScale * frontLeftMotor.getEncPosition());
+		int startCounts = leftPos;
+		//int rightPos = (int) throttleScale * frontRightMotor.getEncPosition();
+
+		//int averagePos = (int) ((rightPos + leftPos) / 2.0);
+		
+		double startTime = Timer.getFPGATimestamp();
+		
+		System.out.println("encoders: " + (leftPos - startCounts));
+		
+		while ((Timer.getFPGATimestamp() - startTime < timeout) && leftPos - startCounts < counts) {
+
+			leftPos = Math.abs((int) throttleScale * frontLeftMotor.getEncPosition());
+			//rightPos = Math.abs((int) throttleScale * frontRightMotor.getEncPosition());
+
+			//averagePos = (int) ((rightPos + leftPos) / 2.0);
+
+			drive.arcadeDrive(0, speed);
+			
+			robotTable.putNumber("encoders", leftPos - startCounts);
+			
+			System.out.println("encoders: " + (leftPos - startCounts));
+
+			SmartDashboard.putString("DB/String 3", Double.toString(throttleScale * frontLeftMotor.get()));
+
+			SmartDashboard.putString("DB/String 8", Double.toString(throttleScale * frontRightMotor.get()));
+
+			SmartDashboard.putString("DB/String 4", Double.toString(throttleScale * frontLeftMotor.getEncPosition()));
+
+			SmartDashboard.putString("DB/String 9", Double.toString(throttleScale * frontRightMotor.getEncPosition()));
 
 			//System.out.println(leftPos + ":" + rightPos);
 

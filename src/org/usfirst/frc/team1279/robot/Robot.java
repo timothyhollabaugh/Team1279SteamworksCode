@@ -67,7 +67,7 @@ public class Robot extends SampleRobot implements Constants {
 
 		if (!test) {
 			System.out.println("Real robot mode");
-			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID);
+			drive = new TalonDriveTrain(LF_DRIVE_CAN_ID, LR_DRIVE_CAN_ID, RF_DRIVE_CAN_ID, RR_DRIVE_CAN_ID, robotTable);
 			claw = new GearClaw(CLAW_CAN_ID, robotTable);
 			gearLift = new GearLift(claw, L_CLAW_LIFT_CAN_ID, robotTable);
 			climber = new Climber(CLIMBER_CAN_ID);
@@ -75,7 +75,7 @@ public class Robot extends SampleRobot implements Constants {
 			System.out.println("Test robot mode");
 			//drive = new TestDriveTrain(0, 1);
 			//drive = new TalonDriveTrain(2, 3, 1, 4);
-			drive = new TalonDriveTrain(1, 2);
+			drive = new TalonDriveTrain(1, 2, robotTable);
 			//claw = new GearClaw(1, robotTable);
 			//gearLift = new GearLift(claw, 2, robotTable);
 		}
@@ -150,16 +150,10 @@ public class Robot extends SampleRobot implements Constants {
 
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
-			//drive.encoderDistance(0.2, 60, vision, 10);
-
-			//drive.driveUntilDigital(0.2, null, distance, 10);
-
-			//double time = Timer.getFPGATimestamp();
-			double startTime = Timer.getFPGATimestamp();
-			//while((Timer.getFPGATimestamp() - startTime < 15) && isAutonomous() && vision.getDistance() < 80){
 			double startTime1 = Timer.getFPGATimestamp();
-			//double startEncoders = drive.getAverageEncoders();
+
 			drive.resetEncoders();
+
 			while ((Timer.getFPGATimestamp() - startTime1 < 10) && isAutonomous() && drive.getAverageEncoders() < 72 * COUNTS_PER_INCH) {
 				double turn = vision.getTurn();
 				if (turn > VISION_MAX_TURN) {
@@ -172,7 +166,7 @@ public class Robot extends SampleRobot implements Constants {
 
 				if (drive.getAverageEncoders() < 50 * COUNTS_PER_INCH) {
 					drive.drive.arcadeDrive(-0.2, -turn, false);
-				}else{
+				} else {
 					drive.drive.arcadeDrive(-0.15, 0, false);
 				}
 
@@ -182,63 +176,76 @@ public class Robot extends SampleRobot implements Constants {
 			}
 
 			drive.drive.arcadeDrive(0, 0);
-/*
-			//Timer.delay(1);
+
+			break;
+
+		case "gl":
+
+			drive.drive.setSafetyEnabled(false);
+			
+			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
+
+			drive.setReversed(true);
+
+			drive.encoderDistance(0.25, 60, null, 10);
+
+			//drive.resetEncoders();
+
+			//drive.setReversed(false);
+
+			//drive.encoderTurn(-0.4, 6, 10);
+			
+			double startTime = Timer.getFPGATimestamp();
+			
+			while ((Timer.getFPGATimestamp() - startTime < 10) && isAutonomous() && !vision.getLock()) {
+				drive.drive.arcadeDrive(0, -0.4);
+			}
+			
+			drive.drive.arcadeDrive(0, 0);
+			
+			double startTime3 = Timer.getFPGATimestamp();
+			
+			while ((Timer.getFPGATimestamp() - startTime3 < 10) && isAutonomous() && Math.abs(vision.getTurn()) > 0.05) {
+				double turn = vision.getTurn();
+				if (Math.abs(turn) < 0.4) {
+					turn = 0.4;
+				} else if (-Math.abs(turn) > -0.4) {
+					turn = -0.4;
+				}
+				drive.drive.arcadeDrive(0, -turn);
+			}
+			
+			drive.resetEncoders();
+			
+			Timer.delay(0.5);
+
 			double startTime2 = Timer.getFPGATimestamp();
-			while ((Timer.getFPGATimestamp() - startTime2 < 2) && isAutonomous() && Math.abs(vision.getTurn()) > Vision.TURN_ERROR) {
-				if (vision.getLock()) {
-					double turn = vision.getTurn();
-					System.out.print("Turning: " + vision.getTurn() + ":");
-					if (turn > VISION_MAX_TURN) {
-						turn = VISION_MAX_TURN;
-					} else if (turn < -VISION_MAX_TURN) {
-						turn = -VISION_MAX_TURN;
-					}
 
-					System.out.println(turn);
 
-					drive.drive.arcadeDrive(0, -turn, false);
-				} else {
-					drive.drive.arcadeDrive(0, 0);
+			while ((Timer.getFPGATimestamp() - startTime2 < 10) && isAutonomous() && drive.getAverageEncoders() < 40 * COUNTS_PER_INCH) {
+				double turn = vision.getTurn();
+				if (turn > VISION_MAX_TURN) {
+					turn = VISION_MAX_TURN;
+				} else if (turn < -VISION_MAX_TURN) {
+					turn = -VISION_MAX_TURN;
 				}
 
-				Timer.delay(0.05);
+				//System.out.println("Driving: " + turn);
+
+				if (drive.getAverageEncoders() < 30 * COUNTS_PER_INCH) {
+					drive.drive.arcadeDrive(-0.15, -turn*1.2, false);
+				} else {
+					drive.drive.arcadeDrive(-0.15, 0, false);
+				}
+
+				robotTable.putNumber("encoders", drive.getAverageEncoders());
+
+				Timer.delay(0.01);
 			}
-			//}
-*/
-			Timer.delay(1);
 
-			//drive.encoderDistance(0.15, 9, null, 5);
+			drive.drive.arcadeDrive(0, 0);
 
-			//double startTime3 = Timer.getFPGATimestamp();
-			//drive.resetEncoders();
-			//double startEncoders2 = drive.getAverageEncoders();
-			//while ((Timer.getFPGATimestamp() - startTime3 < 3) && isAutonomous() && drive.getAverageEncoders() < 9 * COUNTS_PER_INCH) {
-			//double turn = vision.getTurn();
-			//if (turn > VISION_MAX_TURN) {
-			//	turn = VISION_MAX_TURN;
-			//} else if (turn < -VISION_MAX_TURN) {
-			//	turn = -VISION_MAX_TURN;
-			//}
-
-			//System.out.println("Driving: " + turn);
-
-			//drive.drive.arcadeDrive(-0.15, 0, false);
-
-			//robotTable.putNumber("encoders", drive.getAverageEncoders());
-
-			//Timer.delay(0.01);
-			//}
-
-			//Timer.delay(1);
-
-			//drive.encoderDistance(0.1, 12, null, 2);
-
-			//Timer.delay(2);
-
-			//drive.drive(-0.2, 0);
-			//Timer.delay(2);
-			//drive.drive(0, 0);
+			break;
 		}
 	}
 

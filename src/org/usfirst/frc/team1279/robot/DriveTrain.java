@@ -12,6 +12,7 @@ public abstract class DriveTrain {
 	double turnScale = -1;
 	
 	abstract public void encoderDistance(double speed, double distance, Vision vision, double timeout);
+	abstract public void encoderTurn(double speed, double distance, double timeout);
 	abstract public void driveUntilDigital(double speed, Vision vision, DigitalInput input, double timeout);
 	
 	abstract public void resetEncoders();
