@@ -165,7 +165,7 @@ public class Robot extends SampleRobot implements Constants {
 				System.out.println("Driving: " + turn);
 
 				if (drive.getAverageEncoders() < 50 * COUNTS_PER_INCH) {
-					drive.drive.arcadeDrive(-0.2, -turn, false);
+					drive.drive.arcadeDrive(-0.15, -turn, false);
 				} else {
 					drive.drive.arcadeDrive(-0.15, 0, false);
 				}
@@ -187,13 +187,11 @@ public class Robot extends SampleRobot implements Constants {
 
 			drive.setReversed(true);
 
-			drive.encoderDistance(0.25, 60, null, 10);
-
-			//drive.resetEncoders();
-
-			//drive.setReversed(false);
-
-			//drive.encoderTurn(-0.4, 6, 10);
+			// First straight drive
+			drive.encoderDistance(0.25, 91, null, 10);
+			
+			
+			// Turn to see target
 			
 			double startTime = Timer.getFPGATimestamp();
 			
@@ -202,6 +200,9 @@ public class Robot extends SampleRobot implements Constants {
 			}
 			
 			drive.drive.arcadeDrive(0, 0);
+			
+			
+			// Turn to target in center
 			
 			double startTime3 = Timer.getFPGATimestamp();
 			
@@ -218,11 +219,13 @@ public class Robot extends SampleRobot implements Constants {
 			drive.resetEncoders();
 			
 			Timer.delay(0.5);
+			
+			// Final Straight
 
 			double startTime2 = Timer.getFPGATimestamp();
 
 
-			while ((Timer.getFPGATimestamp() - startTime2 < 10) && isAutonomous() && drive.getAverageEncoders() < 40 * COUNTS_PER_INCH) {
+			while ((Timer.getFPGATimestamp() - startTime2 < 10) && isAutonomous() && drive.getAverageEncoders() < 39 * COUNTS_PER_INCH) {
 				double turn = vision.getTurn();
 				if (turn > VISION_MAX_TURN) {
 					turn = VISION_MAX_TURN;
@@ -232,7 +235,7 @@ public class Robot extends SampleRobot implements Constants {
 
 				//System.out.println("Driving: " + turn);
 
-				if (drive.getAverageEncoders() < 30 * COUNTS_PER_INCH) {
+				if (drive.getAverageEncoders() < 29 * COUNTS_PER_INCH) {
 					drive.drive.arcadeDrive(-0.15, -turn*1.2, false);
 				} else {
 					drive.drive.arcadeDrive(-0.15, 0, false);
