@@ -145,6 +145,8 @@ public class Robot extends SampleRobot implements Constants {
 			break;
 
 		case "g": // Center Gear
+			
+			System.out.println("Center gearing");
 
 			drive.drive.setSafetyEnabled(false);
 
@@ -183,7 +185,9 @@ public class Robot extends SampleRobot implements Constants {
 
 			break;
 
-		case "gl": // Left Gear
+		case "gl": // Left (Loaderside) Gear
+			
+			System.out.println("Left (Loaderside) Gearing");
 
 			drive.drive.setSafetyEnabled(false);
 
@@ -253,17 +257,19 @@ public class Robot extends SampleRobot implements Constants {
 
 			break;
 
-		case "gr": // Right Gear
+		case "gb": // Right (Boilerside) Gear
+			
+			System.out.println("Right (Boilderside) Gearing");
 
 			drive.drive.setSafetyEnabled(false);
-
+			
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
 			drive.setReversed(true);
 
 			// First straight drive
 			drive.encoderDistance(0.25, (91 - 19), null, 10);
-
+			
 			// Turn to see target
 
 			double startTimeRightTurn = Timer.getFPGATimestamp();
