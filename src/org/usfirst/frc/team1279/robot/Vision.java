@@ -24,6 +24,8 @@ public class Vision implements Constants{
 	public static final String LOCK_KEY = "lock";
 	
 	public static final String DISTANCE_KEY = "distance";
+	
+	public static final String RECORD_KEY = "record";
 
 	public NetworkTable table;
 
@@ -60,7 +62,11 @@ public class Vision implements Constants{
 	}
 	
 	public double getTurn(){
-		return table.getNumber("turn", 0)*VISION_TURN_K;
+		if(getLock()){
+			return table.getNumber("turn", 0)*VISION_TURN_K;
+		}else{
+			return 0;
+		}
 	}
 	
 	public double getDistance(){
@@ -69,5 +75,9 @@ public class Vision implements Constants{
 	
 	public boolean getLock(){
 		return table.getBoolean(LOCK_KEY, false);
+	}
+	
+	public void setRecord(boolean record){
+		table.putBoolean(RECORD_KEY, record);
 	}
 }

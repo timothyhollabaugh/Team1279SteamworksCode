@@ -30,7 +30,7 @@ public interface Constants {
 	public final int RUN_CLIMBER_SLOW_AXIS = 2; // Left trigger? CHANGE THIS
 	public final int RUN_GEAR_LIFT_AXIS = 1; // Left stick up/down
 
-	// Drive Train constants
+	// Drive Train constantsh
 	public final int COUNTS_PER_INCH = 78; // Not 70.5 because we changed the wheels
 	public final int DISTANCE_PORT = 1;
 
