@@ -219,8 +219,12 @@ public class Robot extends SampleRobot implements Constants {
 
 			//      /----------------------Timeout------------------\     /-Auto check-\    /--See tartget--\ 
 			while ((Timer.getFPGATimestamp() - startTimeLeftTurn < 10) && isAutonomous() && !vision.getLock()) {
-				drive.drive.arcadeDrive(0, -0.4);
+				drive.drive.arcadeDrive(0, -0.38);
 			}
+			
+			//drive.drive.arcadeDrive(0, 0.4);
+			//Timer.delay(0.5);
+			
 
 			drive.drive.arcadeDrive(0, 0);
 
@@ -244,7 +248,7 @@ public class Robot extends SampleRobot implements Constants {
 			Timer.delay(0.5);
 
 			// Final Straight
-
+/*
 			double startTimeLeftFinalDrive = Timer.getFPGATimestamp();
 
 			//      /----------------------Timeout------------------------\     /-Auto check-\    /---------Encoders Distance----------------------------\ 
@@ -267,7 +271,7 @@ public class Robot extends SampleRobot implements Constants {
 				robotTable.putNumber("encoders", drive.getAverageEncoders());
 
 				Timer.delay(0.01);
-			}
+			}*/
 
 			drive.drive.arcadeDrive(0, 0);
 
@@ -287,7 +291,7 @@ public class Robot extends SampleRobot implements Constants {
 			double distanceRight = (80 - 19);
 			
 			if(alliance == Alliance.Red){
-				distanceRight -= 5;
+				//distanceRight -= 5;
 			}
 			
 			System.out.println(alliance);
@@ -317,7 +321,7 @@ public class Robot extends SampleRobot implements Constants {
 				} else if (-Math.abs(turn) > -0.4) {
 					turn = -0.4;
 				}
-				drive.drive.arcadeDrive(0, turn);
+				drive.drive.arcadeDrive(0, -turn);
 			}
 
 			drive.resetEncoders();
@@ -328,7 +332,7 @@ public class Robot extends SampleRobot implements Constants {
 
 			double startTimeRightFinalDrive = Timer.getFPGATimestamp();
 
-			while ((Timer.getFPGATimestamp() - startTimeRightFinalDrive < 10) && isAutonomous() && drive.getAverageEncoders() < (39 - 19) * COUNTS_PER_INCH) {
+			while ((Timer.getFPGATimestamp() - startTimeRightFinalDrive < 10) && isAutonomous() && drive.getAverageEncoders() < (45 - 19) * COUNTS_PER_INCH) {
 				double turn = vision.getTurn();
 				if (turn > VISION_MAX_TURN) {
 					turn = VISION_MAX_TURN;
@@ -338,10 +342,10 @@ public class Robot extends SampleRobot implements Constants {
 
 				//System.out.println("Driving: " + turn);
 
-				if (drive.getAverageEncoders() < 29 * COUNTS_PER_INCH) {
+				if (drive.getAverageEncoders() < 25 * COUNTS_PER_INCH) {
 					drive.drive.arcadeDrive(-0.15, -turn * 1.2, false);
 				} else {
-					drive.drive.arcadeDrive(-0.15, 0, false);
+					drive.drive.arcadeDrive(-0.3, 0, false);
 				}
 
 				robotTable.putNumber("encoders", drive.getAverageEncoders());
