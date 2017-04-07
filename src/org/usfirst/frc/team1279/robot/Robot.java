@@ -5,6 +5,8 @@ import com.ctre.CANTalon.TalonControlMode;
 //import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -37,6 +39,8 @@ public class Robot extends SampleRobot implements Constants {
 
 	DigitalInput testInput = new DigitalInput(TEST_INPUT_PORT);
 	boolean test = false;
+	
+	Alliance alliance;
 
 	boolean oldReverse = false;
 
@@ -89,6 +93,8 @@ public class Robot extends SampleRobot implements Constants {
 		distance = new DigitalInput(DISTANCE_PORT);
 
 		drive.setReversed(false);
+		
+		alliance = m_ds.getAlliance();
 	}
 
 	/**
@@ -173,7 +179,7 @@ public class Robot extends SampleRobot implements Constants {
 					drive.drive.arcadeDrive(-0.15, -turn*2, false);
 				} else {
 					System.out.println("Final Driving");
-					drive.drive.arcadeDrive(-0.15, 0, false);
+					drive.drive.arcadeDrive(-0.3, 0, false);
 				}
 
 				robotTable.putNumber("encoders", drive.getAverageEncoders());
@@ -194,9 +200,18 @@ public class Robot extends SampleRobot implements Constants {
 			vision.setProcess(Vision.GEAR_CONTINUOS_PROCESSING);
 
 			drive.setReversed(true);
+			
+			double distanceLeft = (80 - 19);
+			
+			if(alliance == Alliance.Red){
+				distanceLeft -= 5;
+			}
+			
+			System.out.println(alliance);
+			System.out.println(distanceLeft);
 
 			// First straight drive
-			drive.encoderDistance(0.25, (95 - 19), null, 10);
+			drive.encoderDistance(0.25, distanceLeft, null, 10);
 
 			// Turn to see target
 
@@ -204,7 +219,7 @@ public class Robot extends SampleRobot implements Constants {
 
 			//      /----------------------Timeout------------------\     /-Auto check-\    /--See tartget--\ 
 			while ((Timer.getFPGATimestamp() - startTimeLeftTurn < 10) && isAutonomous() && !vision.getLock()) {
-				drive.drive.arcadeDrive(0, -0.42);
+				drive.drive.arcadeDrive(0, -0.4);
 			}
 
 			drive.drive.arcadeDrive(0, 0);
@@ -243,8 +258,8 @@ public class Robot extends SampleRobot implements Constants {
 
 
 				if (drive.getAverageEncoders() < 29 * COUNTS_PER_INCH) {
-					//drive.drive.arcadeDrive(-0.15, -turn * 1.2, false);
-					drive.drive.arcadeDrive(-0.15, 0, false);
+					drive.drive.arcadeDrive(-0.15, -turn * 1.2, false);
+					//drive.drive.arcadeDrive(-0.15, 0, false);
 				} else {
 					drive.drive.arcadeDrive(-0.15, 0, false);
 				}
@@ -268,15 +283,25 @@ public class Robot extends SampleRobot implements Constants {
 
 			drive.setReversed(true);
 
+
+			double distanceRight = (80 - 19);
+			
+			if(alliance == Alliance.Red){
+				distanceRight -= 5;
+			}
+			
+			System.out.println(alliance);
+			System.out.println(distanceRight);
+			
 			// First straight drive
-			drive.encoderDistance(0.25, (95 - 19), null, 10);
+			drive.encoderDistance(0.25, distanceRight, null, 10);
 			
 			// Turn to see target
 
 			double startTimeRightTurn = Timer.getFPGATimestamp();
 
 			while ((Timer.getFPGATimestamp() - startTimeRightTurn < 10) && isAutonomous() && !vision.getLock()) {
-				drive.drive.arcadeDrive(0, 0.42);
+				drive.drive.arcadeDrive(0, 0.4);
 			}
 
 			drive.drive.arcadeDrive(0, 0);
