@@ -170,7 +170,7 @@ public class Robot extends SampleRobot implements Constants {
 
 				if (drive.getAverageEncoders() < 50 * COUNTS_PER_INCH) {
 					System.out.println("Driving: " + turn);
-					drive.drive.arcadeDrive(-0.15, -turn*1.2, false);
+					drive.drive.arcadeDrive(-0.15, -turn*2, false);
 				} else {
 					System.out.println("Final Driving");
 					drive.drive.arcadeDrive(-0.15, 0, false);
@@ -196,7 +196,7 @@ public class Robot extends SampleRobot implements Constants {
 			drive.setReversed(true);
 
 			// First straight drive
-			drive.encoderDistance(0.25, (91 - 19), null, 10);
+			drive.encoderDistance(0.25, (95 - 19), null, 10);
 
 			// Turn to see target
 
@@ -204,7 +204,7 @@ public class Robot extends SampleRobot implements Constants {
 
 			//      /----------------------Timeout------------------\     /-Auto check-\    /--See tartget--\ 
 			while ((Timer.getFPGATimestamp() - startTimeLeftTurn < 10) && isAutonomous() && !vision.getLock()) {
-				drive.drive.arcadeDrive(0, -0.4);
+				drive.drive.arcadeDrive(0, -0.42);
 			}
 
 			drive.drive.arcadeDrive(0, 0);
@@ -243,7 +243,8 @@ public class Robot extends SampleRobot implements Constants {
 
 
 				if (drive.getAverageEncoders() < 29 * COUNTS_PER_INCH) {
-					drive.drive.arcadeDrive(-0.15, -turn * 1.2, false);
+					//drive.drive.arcadeDrive(-0.15, -turn * 1.2, false);
+					drive.drive.arcadeDrive(-0.15, 0, false);
 				} else {
 					drive.drive.arcadeDrive(-0.15, 0, false);
 				}
@@ -268,14 +269,14 @@ public class Robot extends SampleRobot implements Constants {
 			drive.setReversed(true);
 
 			// First straight drive
-			drive.encoderDistance(0.25, (91 - 19), null, 10);
+			drive.encoderDistance(0.25, (95 - 19), null, 10);
 			
 			// Turn to see target
 
 			double startTimeRightTurn = Timer.getFPGATimestamp();
 
 			while ((Timer.getFPGATimestamp() - startTimeRightTurn < 10) && isAutonomous() && !vision.getLock()) {
-				drive.drive.arcadeDrive(0, 0.4);
+				drive.drive.arcadeDrive(0, 0.42);
 			}
 
 			drive.drive.arcadeDrive(0, 0);
@@ -291,7 +292,7 @@ public class Robot extends SampleRobot implements Constants {
 				} else if (-Math.abs(turn) > -0.4) {
 					turn = -0.4;
 				}
-				drive.drive.arcadeDrive(0, -turn);
+				drive.drive.arcadeDrive(0, turn);
 			}
 
 			drive.resetEncoders();
